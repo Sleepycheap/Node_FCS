@@ -1,8 +1,8 @@
 const axios = require('axios');
 const { getAccessToken } = require('./authController');
-
+const catchAsync = require('./../utils/catchAsync');
 const apiClient = axios.create({
-  baseURL: 'https://graph.microsoft.com/v1.0',
+  baseURL: 'https://graph.microsoft.com/v1.0/',
 });
 
 apiClient.interceptors.request.use(
@@ -10,7 +10,6 @@ apiClient.interceptors.request.use(
     const token = await getAccessToken();
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
-      //console.log(`Token ${token}`);
     }
     return config;
   },

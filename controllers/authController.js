@@ -6,7 +6,7 @@ const dotenv = require('dotenv');
 
 dotenv.config({ path: './.env' });
 
-const tokenEndpoint =
+const url =
   'https://login.microsoftonline.com/e5f81c16-7ed3-48ef-98dc-02b2d0ea9a35/oauth2/v2.0/token';
 
 async function getAccessToken() {
@@ -17,10 +17,8 @@ async function getAccessToken() {
   params.append('scope', process.env.SCOPE);
 
   try {
-    const res = await axios.post(tokenEndpoint, params, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+    const res = await axios.post(url, params, {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     });
 
     return res.data.access_token;
