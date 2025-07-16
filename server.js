@@ -15,6 +15,16 @@ const server = app.listen(port, () => {
   console.log(`App running on port ${port}...`);
 });
 
+(async function () {
+  const listener = await ngrok.forward({
+    addr: process.env.PORT || 3000,
+    authtoken: process.env.NGROK_AUTHTOKEN,
+    domain: 'balanced-fully-moccasin.ngrok-free.app',
+  });
+  console.log(`Ingress established at ${listener.url()}`);
+})();
+process.stdin.resume();
+
 process.on('unhandledRejection', (err) => {
   console.log('UNHANDLED REJECTION! Shutting down...');
   console.log(err.name, err.message);

@@ -2,7 +2,7 @@ const apiClient = require('./apiController');
 const axios = require('axios');
 const { getAccessToken } = require('./authController');
 
-const createSubscription = async (req, res) => {
+exports.createSubscription = async (req, res) => {
   const token = await getAccessToken();
   try {
     const sub = await axios.post(
@@ -26,4 +26,22 @@ const createSubscription = async (req, res) => {
   }
 };
 
-nodule.exports = { createSubscription };
+exports.renewSubscription = async (req, res) => {
+  const token = await getAccessToken();
+  const date = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
+  const renewDate = date.toISOString();
+  try {
+    const renew = await axios.patch(
+      `https://graph.microsoft.com/v1.0/subscriptions/${res.value[0].subscriptionId}`,
+      {
+        expirationDateTime: renewDate,
+      },
+      {
+        header: { Authorization: `Bearer ${token}` },
+      },
+    );
+  } catch (err) {
+    console.error(`Failed to renew subscription! ${err}`);
+    throw err;
+  }
+};
