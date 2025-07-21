@@ -1,8 +1,10 @@
-const apiClient = require('./apiController');
-const axios = require('axios');
-const { getAccessToken } = require('./authController');
+// const apiClient = require('./apiController');
+import axios from 'axios';
+import { getAccessToken } from './authController.js';
+import { lifecycle } from './lifeCyclecontroller.js';
+import { postNotifications } from './notificationController.js';
 
-exports.createSubscription = async (req, res) => {
+export const createSubscription = async (req, res) => {
   const token = await getAccessToken();
   try {
     const sub = await axios.post(
@@ -26,13 +28,14 @@ exports.createSubscription = async (req, res) => {
   }
 };
 
-exports.renewSubscription = async (req, res) => {
+export const renewSubscription = async (req, res) => {
   const token = await getAccessToken();
   const date = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
   const renewDate = date.toISOString();
+  const subId = lifecycle.subId;
   try {
     const renew = await axios.patch(
-      `https://graph.microsoft.com/v1.0/subscriptions/${res.value[0].subscriptionId}`,
+      `https://graph.microsoft.com/v1.0/subscriptions/${subId}`,
       {
         expirationDateTime: renewDate,
       },
@@ -40,6 +43,7 @@ exports.renewSubscription = async (req, res) => {
         header: { Authorization: `Bearer ${token}` },
       },
     );
+    console.log(renewDate);
   } catch (err) {
     console.error(`Failed to renew subscription! ${err}`);
     throw err;

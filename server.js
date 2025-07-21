@@ -1,6 +1,6 @@
-const dotenv = require('dotenv');
-const app = require('./app');
-const ngrok = require('@ngrok/ngrok');
+import dotenv from 'dotenv';
+import app from './app.js';
+import ngrok from '@ngrok/ngrok';
 
 process.on('uncaughtException', (err) => {
   console.log('UNCAUGHT EXCEPTION! Shutting down...');
@@ -8,7 +8,7 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
-dotenv.config({ path: './config.env' });
+dotenv.config({ path: './.env' });
 
 const port = process.env.PORT || 3000;
 const server = app.listen(port, () => {

@@ -1,20 +1,19 @@
-const express = require('express');
-const logger = require('morgan');
-const graphRouter = require('./routes/graphRouter');
-const egnyteRouter = require('./routes/egnyteRouter');
-const notificationRouter = require('./routes/notificationRouter');
-const lifecycleRouter = require('./routes/lifecycleRouter');
+import express from 'express';
+import morgan from 'morgan';
+import graphRouter from './routes/graphRouter.js';
+import notificationRouter from './routes/notificationRouter.js';
+import lifecycleRouter from './routes/lifecycleRouter.js';
 
 const app = express();
 const router = express.Router();
 
-app.use(logger('dev'));
+app.use(morgan('dev'));
 app.use(express.json());
-app.use(express.static(`${__dirname}/public`));
+app.use(express.static('./public'));
 
 app.use('/graph', graphRouter);
 
 app.use('/notifications', notificationRouter);
 app.use('/lifecycleNotifications', lifecycleRouter);
 
-module.exports = app;
+export default app;
