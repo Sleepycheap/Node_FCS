@@ -1,6 +1,6 @@
-const dotenv = require('dotenv');
-const app = require('./app');
-const ngrok = require('@ngrok/ngrok');
+import dotenv from 'dotenv';
+import { app } from './app.js';
+import ngrok from '@ngrok/ngrok';
 
 process.on('uncaughtException', (err) => {
   console.log('UNCAUGHT EXCEPTION! Shutting down...');

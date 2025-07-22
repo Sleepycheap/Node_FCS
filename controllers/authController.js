@@ -1,15 +1,15 @@
-const crypto = require('crypto');
-const catchAsync = require('./../utils/catchAsync');
-const AppError = require('./../utils/appError');
-const axios = require('axios');
-const dotenv = require('dotenv');
+//import crypto = require('crypto');
+//const catchAsync = require('./../utils/catchAsync');
+//const AppError = require('./../utils/appError');
+import axios from 'axios';
+import dotenv from 'dotenv';
 
 dotenv.config({ path: './.env' });
 
 const url =
   'https://login.microsoftonline.com/e5f81c16-7ed3-48ef-98dc-02b2d0ea9a35/oauth2/v2.0/token';
 
-async function getAccessToken() {
+export async function getAccessToken() {
   const params = new URLSearchParams();
   params.append('grant_type', process.env.GRANT_TYPE);
   params.append('client_id', process.env.CLIENT_ID);
@@ -28,4 +28,4 @@ async function getAccessToken() {
   }
 }
 
-module.exports = { getAccessToken };
+// module.exports = { getAccessToken };

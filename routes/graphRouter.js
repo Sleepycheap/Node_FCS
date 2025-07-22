@@ -1,14 +1,14 @@
-const express = require('express');
-const authController = require('./../controllers/authController');
-const graphController = require('./notificationRouter');
-const { getAccessToken } = require('./../controllers/authController');
-const axios = require('axios');
-const apiClient = require('./../controllers/apiController');
-const catchAsync = require('./../utils/catchAsync');
+import { Router } from 'express';
+// const authController = require('./../controllers/authController');
+// const graphController = require('./notificationRouter');
+import { getAccessToken } from './../controllers/authController.js';
+// const axios = require('axios');
+import { apiClient } from './../controllers/apiController.js';
+// const catchAsync = require('./../utils/catchAsync');
 
-const router = express.Router();
+export const graphRouter = Router();
 
-router.get('/token', async (req, res) => {
+graphRouter.get('/token', async (req, res) => {
   try {
     const tokenGet = await getAccessToken();
     const token = res.json({ access_token: tokenGet });
@@ -18,7 +18,7 @@ router.get('/token', async (req, res) => {
   }
 });
 
-router.get('/users', async (req, res, tokenGet) => {
+graphRouter.get('/users', async (req, res, tokenGet) => {
   try {
     // const token = await getAccessToken();
     // console.log(token);
@@ -29,5 +29,3 @@ router.get('/users', async (req, res, tokenGet) => {
     console.error('Error calling graph!', err);
   }
 });
-
-module.exports = router;

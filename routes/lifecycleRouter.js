@@ -1,10 +1,9 @@
-const express = require('express');
-const router = express.Router();
-const {
-  renewSubscription,
-} = require('./../controllers/subscriptionController');
+import { Router } from 'express';
+export const lifecycleRouter = Router();
 
-router.post('/', async (req, res) => {
+import { renewSubscription } from './../controllers/subscriptionController.js';
+
+lifecycleRouter.post('/', async (req, res) => {
   const validationToken = req.query.validationToken;
   if (validationToken) {
     res.status(202).type('text/plain').send(validationToken);

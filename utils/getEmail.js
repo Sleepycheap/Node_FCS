@@ -1,7 +1,6 @@
-const apiClient = require('./apiController');
-const { getAccessToken } = require('./authController');
-const catchAsync = require('./../utils/catchAsync');
-const axios = require('axios');
+// import { getAccessToken } from './../authController.js';
+// const catchAsync = require('./../utils/catchAsync');
+import axios from 'axios';
 
 // const tokenEndpoint =
 //   'https://login.microsoftonline.com/e5f81c16-7ed3-48ef-98dc-02b2d0ea9a35/oauth2/v2.0/token';
@@ -14,7 +13,7 @@ const axios = require('axios');
 //   headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 // };
 
-const getEmail = async (resource) => {
+export const getEmail = async (resource) => {
   const token = await getAccessToken();
   try {
     const url = `https://graph.microsoft.com/v1.0/${resource}/attachments`;
@@ -34,7 +33,7 @@ const getEmail = async (resource) => {
             `https://graph.microsoft.com/v1.0/${resource}/attachments/${id}/?$expand=microsoft.graph.itemattachment/item`,
             {
               headers: { Authorization: `Bearer ${token}` },
-            },
+            }
           );
 
           const headers = attRes.data.item.internetMessageHeaders;
@@ -50,4 +49,4 @@ const getEmail = async (resource) => {
   }
 };
 
-module.exports = getEmail;
+// module.exports = getEmail;
