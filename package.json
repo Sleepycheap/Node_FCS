@@ -13,6 +13,7 @@
     "axios": "^1.10.0",
     "crypto": "^1.0.1",
     "express-promise-router": "^4.1.1",
+    "nodemailer": "^7.0.5",
     "uri-js": "^4.4.1",
     "yargs": "^18.0.0"
   },
