@@ -19,7 +19,7 @@ const server = app.listen(port, () => {
   const listener = await ngrok.forward({
     addr: process.env.PORT || 3000,
     authtoken: process.env.NGROK_AUTHTOKEN,
-    domain: 'balanced-fully-moccasin.ngrok-free.app',
+    domain: process.env.NGROK_DOMAIN,
   });
   console.log(`Ingress established at ${listener.url()}`);
 })();

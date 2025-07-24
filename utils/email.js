@@ -1,6 +1,7 @@
 import { getAccessToken } from './../controllers/authController.js';
 import axios from 'axios';
 import nodemailer from 'nodemailer';
+import fs from 'fs';
 
 export const getEmail = async (resource) => {
   const token = await getAccessToken();
@@ -25,12 +26,8 @@ export const getEmail = async (resource) => {
             },
           );
 
-          // const emailData = attRes.data.item.internetMessageHeaders;
           const emailData = attRes.data.item;
-          // console.log(emailData);
-          //console.log(`Body: ${emailData.body.content}`);
-          //console.log(`Sender: ${emailData.sender.emailAddress.address}`);
-          //return emailData;
+
           smtpSend(emailData, token);
         } catch (err) {
           console.err(`Failed to get attachment properties: ${err}`);
@@ -44,49 +41,10 @@ export const getEmail = async (resource) => {
   return token;
 };
 
-// export const sendEmail = async (emailData, token) => {
-//   try {
-//     const url = 'https://graph.microsoft.com/v1.0/redirect@fcskc.com/sendMail';
-//     const email = await axios.post(
-//       url,
-//       {
-//         message: {
-//           subject: emailData.sender.emailAddress.address,
-//           body: {
-//             contentType: emailData.body.contentType,
-//             content: emailData.body.content,
-//           },
-//           toRecipient: [
-//             {
-//               emailAddress: {
-//                 address: 'helpdesk@fcskc.com',
-//               },
-//             },
-//           ],
-//           ccRecipients: [
-//             {
-//               emailAddress: {
-//                 address: 'anthony@fcskc.com',
-//               },
-//             },
-//           ],
-//         },
-//         saveToSentItems: 'true',
-//       },
-//       {
-//         headers: { Authorization: `Bearer ${token}` },
-//       },
-//     );
-//   } catch (err) {
-//     console.log(`Unable to send email!: ${err} `);
-//     throw err;
-//   }
-// };
-
 export const smtpSend = async (emailData, token) => {
   const transporter = nodemailer.createTransport({
-    host: 'mail.smtp2go.com',
-    port: 2525,
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT || 2525,
     secure: false,
     auth: {
       user: process.env.SMTP_USER,
@@ -97,10 +55,17 @@ export const smtpSend = async (emailData, token) => {
   try {
     const email = await transporter.sendMail({
       from: emailData.sender.emailAddress.address,
-      to: 'helpdesk@fcskc.com',
+      to: process.env.SMTP_TO_ADDRESS,
       subject: emailData.subject,
       //text: emailData.body.content,
       html: emailData.body.content,
+      attachments: [
+        {
+          filename: emailData.attachments[2].name,
+          content: Buffer.from(emailData.attachments[2].contentBytes, 'base64'),
+          contentType: emailData.attachments[2].contentType,
+        },
+      ],
     });
     console.log(
       'Message sent: %s',

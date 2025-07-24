@@ -9,13 +9,21 @@ export const getNotifications = (req, res) => {
   }
 };
 
+let executed = false;
+
 export const postNotifications = async (req, res) => {
-  if (req.query.validationToken) {
-    const validationToken = req.query.validationToken;
-    res.status(200).type('text/plain').send(validationToken);
+  if (!executed) {
+    executed = true;
+    if (req.query.validationToken) {
+      const validationToken = req.query.validationToken;
+      res.status(200).type('text/plain').send(validationToken);
+    } else {
+      const resource = req.body.value[0].resource;
+      console.log(`🔔 Received notifications: ${resource}`);
+      await getEmail(resource);
+    }
   } else {
-    const resource = req.body.value[0].resource;
-    console.log(`🔔 Received notifications: ${resource}`);
-    await getEmail(resource);
+    executed = false;
+    return res.send('This email has already been sent!').status(418);
   }
 };
