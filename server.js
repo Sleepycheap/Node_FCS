@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import app from './app.js';
 import ngrok from '@ngrok/ngrok';
+import mongoose from 'mongoose';
 
 process.on('uncaughtException', (err) => {
   console.log('UNCAUGHT EXCEPTION! Shutting down...');
@@ -9,6 +10,12 @@ process.on('uncaughtException', (err) => {
 });
 
 dotenv.config({ path: './.env' });
+
+const DB = process.env.DATABASE;
+
+mongoose
+  .connect(DB, {})
+  .then(() => console.log(`${process.env.NODE_ENV}: DB connection succesful`));
 
 const port = process.env.PORT || 3000;
 const server = app.listen(port, () => {

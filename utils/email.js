@@ -1,6 +1,7 @@
 import { getAccessToken } from './../controllers/authController.js';
 import axios from 'axios';
 import nodemailer from 'nodemailer';
+import { createEmail } from '../controllers/emailController.js';
 import fs from 'fs';
 
 export const getEmail = async (resource) => {
@@ -27,6 +28,17 @@ export const getEmail = async (resource) => {
           );
 
           const emailData = attRes.data.item;
+
+          const eData = new Map([
+            ['sender', emailData.sender.emailAddress.address],
+            ['subject', emailData.subject],
+            ['body', emailData.body.content],
+            ['attachments', emailData.attachments > 0 ? true : false],
+            ['dateReceived', emailData.receivedDateTime],
+            ['dateSent', new Date().toLocaleString()],
+          ]);
+
+          createEmail(eData);
 
           smtpSend(emailData, token);
         } catch (err) {
