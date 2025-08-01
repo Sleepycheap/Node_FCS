@@ -14,7 +14,7 @@ export const emailSchema = new mongoose.Schema(
       type: String,
     },
     attachments: {
-      type: Boolean,
+      type: Array,
     },
     dateReceived: {
       type: Date,
@@ -24,13 +24,13 @@ export const emailSchema = new mongoose.Schema(
     },
   },
   {
+    // This allows virtual properties to be shown in the API output
     toJSON: { virtuals: true },
     toOject: { virtuals: true },
   },
 );
 
-emailSchema.pre('save', function (next) {
-  next();
-});
+// Prevents Duplicates using combination of Sender and Subject
+emailSchema.index({ sender: 1, subject: 1 }, { unique: true });
 
 export const Email = mongoose.model('Email', emailSchema);

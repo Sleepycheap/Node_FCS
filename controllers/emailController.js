@@ -1,27 +1,46 @@
 import { Email } from './../models/emailModel.js';
 import { APIFeatures } from './../utils/apiFeatures.js';
+import axios from 'axios';
+import { getAccessToken } from './authController.js';
 
-export const createEmail = async (req, res, next, eData) => {
-  //const email = await Email.create(eData);
-  //const email = await Email.save(req.body);
-  const email = new Email();
-
-  email.save(err) => {
-    if(err)
-      throw err;
-    console.log(req.body);
-    res.json();
+export const getSubject = async (resource) => {
+  const token = await getAccessToken();
+  try {
+    const url = `https://graph.microsoft.com/v1.0/${resource}`;
+    const r = await axios.get(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = r.data;
+    const subject = r.data.subject;
+    console.log(`Data: ${data}`);
+    console.log(`Subject: ${subject}`);
+    return subject;
+  } catch (err) {
+    console.log(`Error: ${err}`);
   }
-
-  res.status(201).json({
-    status: 'success',
-    data: {
-      data: email,
-    },
-  });
 };
 
-export const getEmails = async (req, res, next) => {
+// Saves email to database
+export const createEmail = async (req, res, eData) => {
+  try {
+    const newEmail = await Email.create(eData);
+
+    res.status(201).json({
+      status: 'success',
+      data: {
+        data: newEmail,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: 'Invalid data sent!',
+    });
+  }
+};
+
+// Retrieves email from database
+export const getEmails = async (req, res) => {
   let filter = {};
 
   const features = new APIFeatures(Email.find(filter), req.query)

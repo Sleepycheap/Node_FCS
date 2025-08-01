@@ -2,9 +2,8 @@ import { getAccessToken } from './../controllers/authController.js';
 import axios from 'axios';
 import nodemailer from 'nodemailer';
 import { createEmail } from '../controllers/emailController.js';
-import fs from 'fs';
 
-export const getEmail = async (resource) => {
+export const getEmail = async (resource, subject) => {
   const token = await getAccessToken();
   try {
     const url = `https://graph.microsoft.com/v1.0/${resource}/attachments`;
@@ -12,12 +11,18 @@ export const getEmail = async (resource) => {
       headers: { Authorization: `Bearer ${token}` },
     });
 
+    // CREATES JSON OBJECT OF ATTACHMENTS
     const data = notification.data.value;
 
+    // FILTERS FOR FORWARDED EMAIL
     for (const value of data) {
       const contentType = value.contentType;
       const id = value.id;
-      if (contentType === 'message/rfc822') {
+      const n_subject = value.name.split(': ', -1);
+
+      const test2 = `FW:` + ' ' + n_subject;
+
+      if (test2 === subject) {
         console.log(`Guilty Email: ${id},${contentType}`);
         try {
           const attRes = await axios.get(
@@ -27,9 +32,11 @@ export const getEmail = async (resource) => {
             },
           );
 
-          const emailData = attRes.data.item;
+          const eData = attRes.data.item;
+          const attachedData = attRes.data.item.attachments;
 
-          const eData = new Map([
+          /*
+            const eData = new Map([
             ['sender', emailData.sender.emailAddress.address],
             ['subject', emailData.subject],
             ['body', emailData.body.content],
@@ -41,8 +48,30 @@ export const getEmail = async (resource) => {
           createEmail(eData);
 
           smtpSend(emailData, token);
+        */
+
+          const attachmentObject = {};
+
+          for (let i = 0; i < attachedData.length; i++) {
+            const { name, contentType, contentBytes } = attachedData[i];
+            attachmentObject[`attachment${i + 1}`] = {
+              name,
+              contentType,
+              contentBytes,
+            };
+          }
+
+          console.log('Attachments:');
+          //console.log(eData.attachments);
+
+          //createEmail(eData);
+          smtpSend(eData);
         } catch (err) {
-          console.err(`Failed to get attachment properties: ${err}`);
+          console.error(`Failed to get attachment properties: ${err}`);
+        }
+      } else {
+        if (test2 !== subject) {
+          console.log(`NOT MATCHING: ${test2} | ${subject}`);
         }
       }
     }
@@ -53,7 +82,7 @@ export const getEmail = async (resource) => {
   return token;
 };
 
-export const smtpSend = async (emailData, token) => {
+export const smtpSend = async (eData) => {
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT || 2525,
@@ -64,26 +93,27 @@ export const smtpSend = async (emailData, token) => {
     },
   });
 
+  const attachedData = eData.attachments;
+
+  const attachmentObject = {};
+
+  for (let i = 0; i < attachedData.length; i++) {
+    const { name, contentType, contentBytes } = attachedData[i];
+    attachmentObject[`attachment${i + 1}`] = {
+      name,
+      contentType,
+      contentBytes,
+    };
+  }
   try {
     const email = await transporter.sendMail({
-      from: emailData.sender.emailAddress.address,
-      to: process.env.SMTP_TO_ADDRESS,
-      subject: emailData.subject,
-      //text: emailData.body.content,
-      html: emailData.body.content,
-      attachments: [
-        {
-          filename: emailData.attachments[2].name,
-          content: Buffer.from(emailData.attachments[2].contentBytes, 'base64'),
-          contentType: emailData.attachments[2].contentType,
-        },
-      ],
+      from: eData.sender.emailAddress.address,
+      to: 'anthony@fcskc.com',
+      subject: eData.subject,
+      html: eData.body.content,
+      attachments: attachmentObject,
     });
-    console.log(
-      'Message sent: %s',
-      email.messageId,
-      `Email Data: ${emailData}`,
-    );
+    console.log('Message sent: %s', email.messageId, `Email Data: ${eData}`);
     console.log('Preview URL: %s', nodemailer.getTestMessageUrl(email));
   } catch (err) {
     console.log('Error while sending email', err);

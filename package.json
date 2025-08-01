@@ -12,11 +12,15 @@
     "@ngrok/ngrok": "^1.5.1",
     "axios": "^1.10.0",
     "crypto": "^1.0.1",
+    "express-mongo-sanitize": "^2.2.0",
     "express-promise-router": "^4.1.1",
+    "express-rate-limit": "^8.0.1",
     "fs": "^0.0.1-security",
     "mongoose": "^8.16.5",
     "nodemailer": "^7.0.5",
     "uri-js": "^4.4.1",
+    "xss": "^1.0.15",
+    "xss-clean": "^0.1.4",
     "yargs": "^18.0.0"
   },
   "type": "module"

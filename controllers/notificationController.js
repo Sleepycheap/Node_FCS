@@ -1,4 +1,5 @@
 import { getEmail } from '../utils/email.js';
+import { getSubject } from './emailController.js';
 
 export const getNotifications = (req, res) => {
   const validationToken = req.query.validationToken;
@@ -18,9 +19,15 @@ export const postNotifications = async (req, res) => {
       const validationToken = req.query.validationToken;
       res.status(200).type('text/plain').send(validationToken);
     } else {
-      const resource = req.body.value[0].resource;
-      console.log(`🔔 Received notifications: ${resource}`);
-      await getEmail(resource);
+      try {
+        const resource = req.body.value[0].resource;
+        const id = req.body.value[0].resourceData.id;
+        console.log(`🔔 Received notifications: ${resource}`);
+        const subject = await getSubject(resource);
+        await getEmail(resource, subject);
+      } catch (err) {
+        console.log(`Email received, but cannot get data!: ${err}`);
+      }
     }
   } else {
     executed = false;
