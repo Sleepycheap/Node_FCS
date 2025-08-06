@@ -2,7 +2,9 @@ import { Email } from './../models/emailModel.js';
 import { APIFeatures } from './../utils/apiFeatures.js';
 import axios from 'axios';
 import { getAccessToken } from './authController.js';
+import { smtpSend } from '../utils/email.js';
 
+// Gets subject line to compare against attachment. If subject and attachment match, script proceeds
 export const getSubject = async (resource) => {
   const token = await getAccessToken();
   try {
@@ -12,7 +14,7 @@ export const getSubject = async (resource) => {
     });
     const data = r.data;
     const subject = r.data.subject;
-    console.log(`Data: ${data}`);
+    //console.log(`Data: ${data}`);
     console.log(`Subject: ${subject}`);
     return subject;
   } catch (err) {
@@ -21,21 +23,21 @@ export const getSubject = async (resource) => {
 };
 
 // Saves email to database
-export const createEmail = async (req, res, eData) => {
+export const createEmail = async (processedEmail) => {
   try {
-    const newEmail = await Email.create(eData);
-
-    res.status(201).json({
-      status: 'success',
-      data: {
-        data: newEmail,
+    const newEmail = await Email.create([
+      {
+        sender: processedEmail.sender,
+        subject: processedEmail.subject,
+        body: processedEmail.body,
+        attachments: processedEmail.attachments,
+        dateReceived: processedEmail.dateReceived,
+        dateSent: processedEmail.dateSent,
       },
-    });
+    ]);
+    smtpSend(processedEmail);
   } catch (err) {
-    res.status(400).json({
-      status: 'fail',
-      message: 'Invalid data sent!',
-    });
+    console.log(err);
   }
 };
 
