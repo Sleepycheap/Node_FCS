@@ -40,49 +40,28 @@ export const getEmail = async (resource, subject) => {
           );
           const eData = attRes.data.item;
           //console.log(`eData: ${eData.body.content}`);
-          // const preBody = eData.body.content.split('<p class=\"MsoNormal\">');
-          // const postBody = preBody[1].split(' <o:p></o:p>')[0];
-          // const eBody = `<p>${postBody}</p></body></html>`;
-          const preBody = eData.body.content;
-          const dom = new JSDOM(preBody, { includeNodeLocations: true });
-          const document = dom.window.document;
-          console.log(`BODY: ${document.body.innerHTML}`);
-          const div = document.querySelector('div').innerHTML;
-          console.log(`TEST: ${div.split('<![endif]-->')}`);
+          const preBody = eData.body.content.split('</head>')[1];
+          const preBody2 = preBody.split('<!-- BEGIN:IPW -->')[0];
+          const postBody = eData.body.content.split('<!-- END:IPW -->')[1];
+          const postBody2 = postBody.split('</html>')[0];
+          const body = preBody2 + postBody2;
 
-          //console.log(`document: ${document.textContent}`);
-          // console.log(`Document: ${document}`);
-          // console.log(
-          //   `Body: ${document.body}`,
-          //   dom.nodeLocation(document.body),
-          // );
-
-          // const dom2 = new JSDOM(eData, { includeNodeLocations: true });
-          // const document2 = dom2.window.document;
-          // console.log(`DOM2: ${document2}`);
-          // const body2 = document2.body.textContent;
-          // console.log(`BODY2: ${body2.firstChild}`);
-          //const text = document.body.textContent;
-          //console.log(`TEXT: ${text}`);
-          //const body = text.split('}')[5];
-          //console.log(`BODY: ${body}`);
-
-          // const processedEmail = {
-          //   sender: eData.sender.emailAddress.address,
-          //   subject: eData.subject,
-          //   body: body, //eBody
-          //   attachments: eData.attachments,
-          //   dateReceived: eData.receivedDataTime,
-          //   dateSent: eData.sentDateTime,
-          // };
+          const processedEmail = {
+            sender: eData.sender.emailAddress.address,
+            subject: eData.subject,
+            body: body,
+            attachments: eData.attachments,
+            dateReceived: eData.receivedDataTime,
+            dateSent: eData.sentDateTime,
+          };
 
           //console.log(`Processed Email: ${processedEmail.sender}`);
 
           // SAVES EMAIL TO DATABASE
-          //createEmail(processedEmail);
+          createEmail(processedEmail);
 
           // SENDS EMAIL TO HELPDESK
-          //smtpSend(eData);
+          //smtpSend(processedEmail);
         } catch (err) {
           console.error(`Failed to get attachment properties: ${err}`);
         }
@@ -120,20 +99,13 @@ export const smtpSend = async (processedEmail, unique) => {
     contentType: att.contentType,
   }));
 
-  // CREATES BODY OF EMAIL
-
-  // const preBody = processedEmail.body.content.split('<p class=\"MsoNormal\">');
-  // const postBody = preBody[1].split(' <o:p></o:p>')[0];
-  // const eBody = `<p>${postBody}</p></body></html>`;
-
   try {
     // Creates email and sends to helpdesk
     const email = await transporter.sendMail({
-      from: processedEmail.sender.emailAddress.address,
+      from: processedEmail.sender,
       to: 'anthony@fcskc.com', //process.env.SMTP_TO_ADDRESS
       subject: processedEmail.subject,
-      // text: 'TEXT:' + postBody,
-      html: eBody,
+      html: processedEmail.body,
       attachments: processedAttachments,
     });
     console.log(
@@ -145,6 +117,7 @@ export const smtpSend = async (processedEmail, unique) => {
   } catch (err) {
     console.log('Error while sending email', err);
   }
+  return;
 };
 // else {
 //   console.log('Duplicate email, aborting...');

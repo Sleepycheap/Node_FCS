@@ -11,29 +11,25 @@ export const getNotifications = (req, res) => {
 };
 
 // ALL NEW EMAILS WILL HAVE 'EXECUTED' SET TO FALSE FORCEFULLY
-let executed = false;
+//let executed = false;
 
 export const postNotifications = async (req, res) => {
-  if (!executed) {
-    executed = true;
-    if (req.query.validationToken) {
-      // RESPONDS TO GRAPH API TO CREATE CHANGE NOTIFICATION
-      const validationToken = req.query.validationToken;
-      res.status(200).type('text/plain').send(validationToken);
-    } else {
-      try {
-        // This is triggered when new email comes in
-        const resource = req.body.value[0].resource;
-        const id = req.body.value[0].resourceData.id;
-        console.log(`🔔 Received notifications: ${resource}`);
-        const subject = await getSubject(resource);
-        await getEmail(resource, subject);
-      } catch (err) {
-        console.log(`Email received, but cannot get data!: ${err}`);
-      }
-    }
+  let executed = false;
+  if (req.query.validationToken) {
+    // RESPONDS TO GRAPH API TO CREATE CHANGE NOTIFICATION
+    const validationToken = req.query.validationToken;
+    res.status(200).type('text/plain').send(validationToken);
   } else {
-    executed = false;
-    return res.send('This email has already been sent!').status(418);
+    try {
+      // This is triggered when new email comes in
+      const resource = req.body.value[0].resource;
+      const id = req.body.value[0].resourceData.id;
+      console.log(`🔔 Received notifications: ${resource}`);
+      const subject = await getSubject(resource);
+      executed = true;
+      await getEmail(resource, subject);
+    } catch (err) {
+      console.log(`Email received, but cannot get data!: ${err}`);
+    }
   }
 };
