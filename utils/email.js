@@ -17,7 +17,7 @@ export const getEmail = async (resource, subject) => {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    // CREATES JSON OBJECT OF ATTACHMENTS
+    //
     const data = notification.data.value;
 
     // FILTERS FOR FORWARDED EMAIL
@@ -26,7 +26,7 @@ export const getEmail = async (resource, subject) => {
       const id = value.id;
       const n_subject = value.name.split(': ', -1);
 
-      const test2 = `FW:` + ' ' + n_subject;
+      const test2 = `Fw:` + ' ' + n_subject;
       console.log(`${test2} || ${subject}`);
 
       if (test2 === subject) {
@@ -36,12 +36,19 @@ export const getEmail = async (resource, subject) => {
             `https://graph.microsoft.com/v1.0/${resource}/attachments/${id}/?$expand=microsoft.graph.itemattachment/item`,
             {
               headers: { Authorization: `Bearer ${token}` },
-            },
+            }
           );
           const eData = attRes.data.item;
           //console.log(`eData: ${eData.body.content}`);
+
+          //////////////////////
+          // STRIPS INKY BANNER FROM EMAIL BODY, LEAVES ALL HTML
+
+          // Everying before Inky banner
           const preBody = eData.body.content.split('</head>')[1];
           const preBody2 = preBody.split('<!-- BEGIN:IPW -->')[0];
+
+          // Everything A
           const postBody = eData.body.content.split('<!-- END:IPW -->')[1];
           const postBody2 = postBody.split('</html>')[0];
           const body = preBody2 + postBody2;
@@ -58,15 +65,17 @@ export const getEmail = async (resource, subject) => {
           //console.log(`Processed Email: ${processedEmail.sender}`);
 
           // SAVES EMAIL TO DATABASE
-          createEmail(processedEmail);
+          await createEmail(processedEmail);
 
           // SENDS EMAIL TO HELPDESK
           //smtpSend(processedEmail);
         } catch (err) {
           console.error(`Failed to get attachment properties: ${err}`);
+          return;
         }
       } else {
         console.log(`NOT MATCH: ${test2} || ${subject}`);
+        return;
       }
     }
   } catch (err) {
@@ -111,7 +120,7 @@ export const smtpSend = async (processedEmail, unique) => {
     console.log(
       'Message sent: %s',
       email.messageId,
-      `Email Data: ${processedEmail}`,
+      `Email Data: ${processedEmail}`
     );
     console.log('Preview URL: %s', nodemailer.getTestMessageUrl(email));
   } catch (err) {

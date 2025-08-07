@@ -4,9 +4,9 @@ import graphRouter from './routes/graphRouter.js';
 import notificationRouter from './routes/notificationRouter.js';
 import lifecycleRouter from './routes/lifecycleRouter.js';
 import testsRouter from './routes/testsRouter.js';
-import mongoSanitize from 'express-mongo-sanitize';
-import xss from 'xss';
-import helmet from 'helmet';
+//import mongoSanitize from 'express-mongo-sanitize';
+//import xss from 'xss';
+//import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 
 const app = express();
@@ -33,6 +33,7 @@ app.use(express.static('./public'));
 app.use('/graph', graphRouter);
 
 app.use('/notifications', notificationRouter);
+//app.use('/emailsend', emailsendRouter);
 app.use('/lifecycleNotifications', lifecycleRouter);
 app.use('/test', testsRouter);
 //app.use('/saveEmail', emailRouter);

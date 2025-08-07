@@ -1,5 +1,6 @@
 import { getEmail } from '../utils/email.js';
 import { getSubject } from './emailController.js';
+import axios from 'axios';
 
 export const getNotifications = (req, res) => {
   const validationToken = req.query.validationToken;
@@ -11,10 +12,10 @@ export const getNotifications = (req, res) => {
 };
 
 // ALL NEW EMAILS WILL HAVE 'EXECUTED' SET TO FALSE FORCEFULLY
-//let executed = false;
+// let executed = false;
 
 export const postNotifications = async (req, res) => {
-  let executed = false;
+  const resource = req.body.value[0].resource;
   if (req.query.validationToken) {
     // RESPONDS TO GRAPH API TO CREATE CHANGE NOTIFICATION
     const validationToken = req.query.validationToken;
@@ -22,12 +23,12 @@ export const postNotifications = async (req, res) => {
   } else {
     try {
       // This is triggered when new email comes in
-      const resource = req.body.value[0].resource;
-      const id = req.body.value[0].resourceData.id;
+      // const id = req.body.value[0].resourceData.id;
       console.log(`🔔 Received notifications: ${resource}`);
       const subject = await getSubject(resource);
-      executed = true;
+      //executed = true;
       await getEmail(resource, subject);
+      return;
     } catch (err) {
       console.log(`Email received, but cannot get data!: ${err}`);
     }

@@ -38,6 +38,7 @@ export const createEmail = async (processedEmail) => {
     smtpSend(processedEmail);
   } catch (err) {
     console.log(err);
+    return;
   }
 };
 
