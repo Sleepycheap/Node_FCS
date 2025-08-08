@@ -8,7 +8,7 @@ export const getToken = async (req, res) => {
     const token = res.json({ access_token: tokenGet });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ error: 'Unable to retrieve access token' });
+    res.status(500).send(`error: ${err} 'Unable to retrieve access token' `);
   }
 };
 

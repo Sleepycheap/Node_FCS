@@ -1,45 +1,60 @@
 import { getAccessToken } from './../controllers/authController.js';
 import axios from 'axios';
 import nodemailer from 'nodemailer';
-import { createEmail } from '../controllers/emailController.js';
+import { createEmail, getSubject } from '../controllers/emailController.js';
 import jsdom from 'jsdom';
-import { createPublicKey } from 'crypto';
 const { JSDOM } = jsdom;
 
-// import { unique } from '../models/emailModel.js';
-
 // Gets the email forwarded to Redirect
-export const getEmail = async (resource, subject) => {
+export const getEmail = async (resource) => {
   const token = await getAccessToken();
   try {
     const url = `https://graph.microsoft.com/v1.0/${resource}/attachments`;
+    //console.log(`URL: ${url}`);
     const notification = await axios.get(url, {
       headers: { Authorization: `Bearer ${token}` },
     });
+
+    const subject = await getSubject(resource);
 
     //
     const data = notification.data.value;
 
     // FILTERS FOR FORWARDED EMAIL
+
     for (const value of data) {
       const contentType = value.contentType;
       const id = value.id;
-      const n_subject = value.name.split(': ', -1);
+      let n_subject = value.name.split(': ', -1);
+      const sbjt = (n_subject[0] = 'RE,'
+        ? 'FW:' + ' ' + n_subject[1]
+        : 'FW:' + ' ' + n_subject);
+      console.log(`TEST: ${sbjt}`);
+      // const test = n_subject[1];
+      // console.log(`TEST: ${test}`);
+      //const sub = n_subject.split(',');
+      //console.log(`SUB: ${sub}`);
+      // if (n_subject.includes('RE,')) {
+      //   const split = n_subject.split(',');
+      //   const sub = split[1];
+      //   let sbjt = `FW:` + ' ' + sub;
+      //   console.log(`RE: ${sbjt}`);
+      // } else {
+      //   let sbjt = `FW:` + ' ' + n_subject;
+      //   console.log(`NO RE: ${sbjt}`);
+      // }
 
-      const test2 = `Fw:` + ' ' + n_subject;
-      console.log(`${test2} || ${subject}`);
-
-      if (test2 === subject) {
-        console.log(`Guilty Email: ${id},${contentType}`);
+      if (sbjt === subject) {
+        // Checks to find attached email. Attachment name should match subject of sent email
+        console.log(`INCOMING EMAIL: ${subject}`);
         try {
           const attRes = await axios.get(
             `https://graph.microsoft.com/v1.0/${resource}/attachments/${id}/?$expand=microsoft.graph.itemattachment/item`,
             {
               headers: { Authorization: `Bearer ${token}` },
-            }
+            },
           );
           const eData = attRes.data.item;
-          //console.log(`eData: ${eData.body.content}`);
 
           //////////////////////
           // STRIPS INKY BANNER FROM EMAIL BODY, LEAVES ALL HTML
@@ -48,7 +63,7 @@ export const getEmail = async (resource, subject) => {
           const preBody = eData.body.content.split('</head>')[1];
           const preBody2 = preBody.split('<!-- BEGIN:IPW -->')[0];
 
-          // Everything A
+          // Everything After Inky banner
           const postBody = eData.body.content.split('<!-- END:IPW -->')[1];
           const postBody2 = postBody.split('</html>')[0];
           const body = preBody2 + postBody2;
@@ -62,20 +77,13 @@ export const getEmail = async (resource, subject) => {
             dateSent: eData.sentDateTime,
           };
 
-          //console.log(`Processed Email: ${processedEmail.sender}`);
-
           // SAVES EMAIL TO DATABASE
           await createEmail(processedEmail);
-
-          // SENDS EMAIL TO HELPDESK
-          //smtpSend(processedEmail);
         } catch (err) {
           console.error(`Failed to get attachment properties: ${err}`);
-          return;
         }
       } else {
-        console.log(`NOT MATCH: ${test2} || ${subject}`);
-        return;
+        console.log(`NOT MATCH: ${sbjt} || ${subject}`);
       }
     }
   } catch (err) {
@@ -85,9 +93,7 @@ export const getEmail = async (resource, subject) => {
   return token;
 };
 
-export const smtpSend = async (processedEmail, unique) => {
-  //'console.log(`Unique: ${unique}`);
-  //if (unique === true) {
+export const smtpSend = async (processedEmail) => {
   console.log('SENDING EMAIL');
   // NODEMAILER USES STMP2GO TO SEND EMAIL
   const transporter = nodemailer.createTransport({
@@ -120,7 +126,7 @@ export const smtpSend = async (processedEmail, unique) => {
     console.log(
       'Message sent: %s',
       email.messageId,
-      `Email Data: ${processedEmail}`
+      `Email Data: ${processedEmail}`,
     );
     console.log('Preview URL: %s', nodemailer.getTestMessageUrl(email));
   } catch (err) {
@@ -128,8 +134,3 @@ export const smtpSend = async (processedEmail, unique) => {
   }
   return;
 };
-// else {
-//   console.log('Duplicate email, aborting...');
-//   return;
-// };
-//};

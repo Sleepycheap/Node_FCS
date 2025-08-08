@@ -15,7 +15,7 @@ export const getSubject = async (resource) => {
     const data = r.data;
     const subject = r.data.subject;
     //console.log(`Data: ${data}`);
-    console.log(`Subject: ${subject}`);
+    //console.log(`Subject: ${subject}`);
     return subject;
   } catch (err) {
     console.log(`Error: ${err}`);
@@ -35,7 +35,8 @@ export const createEmail = async (processedEmail) => {
         dateSent: processedEmail.dateSent,
       },
     ]);
-    smtpSend(processedEmail);
+    // Sends email if not already saved to database
+    await smtpSend(processedEmail);
   } catch (err) {
     console.log(err);
     return;
