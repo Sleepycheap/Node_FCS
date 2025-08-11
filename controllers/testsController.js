@@ -1,6 +1,8 @@
 import { Email } from '../models/emailModel.js';
 import { APIFeatures } from '../utils/apiFeatures.js';
 import jsdom from 'jsdom';
+import { getAccessToken } from './authController.js';
+import axios from 'axios';
 const { JSDOM } = jsdom;
 
 export const createEmail = async (req, res, next) => {
@@ -167,4 +169,23 @@ bgcolor="#ffffff"><!--[if (mso)|(IE)]> <table align="center" style="width:600px;
   const body = document.body.textContent;
   console.log(`BODY: ${body.split('}')[4]}`);
   // console.log(`Document: ${document.body.textContent}`);
+};
+
+export const renewSubscription = async (req, res) => {
+  //res.status(202).type('text/plain').send('Renewing subscription');
+  const id = req.body.value[0].subscriptionId;
+  const token = await getAccessToken();
+  const date = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
+  const renewDate = date.toISOString();
+  try {
+    const subRenew = await axios.patch(
+      `https://graph.microsoft.com/v1.0/subscriptions/${id}`,
+      { expirationDateTime: renewDate },
+      { header: { Authorization: `Bearer ${token}` } },
+    );
+    res.status(202).type('text/plain').send('Renewing subscription');
+  } catch (err) {
+    console.log(`Failed to renew Subscription: ${err}`, res.textContent);
+    res.status(`${res.statusCode}`).send(err);
+  }
 };
