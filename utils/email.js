@@ -134,3 +134,12 @@ export const smtpSend = async (processedEmail) => {
   }
   return;
 };
+
+export const captureResource = async (resource) => {
+  const token = await getAccessToken();
+  const call = await axios.get(`https://graph.microsoft.com/v1/${resource}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  console.log(`Call: ${call}`);
+  console.log(`Data: ${call.data}`);
+};

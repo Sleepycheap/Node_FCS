@@ -10,6 +10,9 @@ import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
+import formsRouter from './routes/formsRouter.js';
+import formLifeRouter from './routes/formLifeRouter.js';
+import { formLifeCycle } from './controllers/formsController.js';
 
 const app = express();
 
@@ -38,6 +41,8 @@ app.use('/notifications', notificationRouter);
 app.use('/emailsend', emailsendRouter);
 app.use('/lifecycleNotifications', lifecycleRouter);
 app.use('/test', testsRouter);
+app.use('/forms', formsRouter);
+app.use('/formLifecycle', formLifeRouter);
 //app.use('/saveEmail', emailRouter);
 
 export default app;

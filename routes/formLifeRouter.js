@@ -1,8 +1,6 @@
 import express from 'express';
-import { lifecycle } from '../controllers/lifeCyclecontroller.js';
 import { formLifeCycle } from '../controllers/formsController.js';
 const router = express.Router();
-
-router.post('/', lifecycle);
+router.post('/', formLifeCycle);
 
 export default router;

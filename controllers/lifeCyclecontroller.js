@@ -7,19 +7,22 @@ export const lifecycle = async (req, res) => {
     const validationToken = req.query.validationToken;
     res.status(202).type('text/plain').send(validationToken);
   } else {
-    res.status(202).type('text/plain').send('Renewing subscription');
     const id = req.body.value[0].subscriptionId;
+    console.log(`ID: ${id}`);
     const token = await getAccessToken();
+    console.log(`Token: ${token}`);
     const date = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
     const renewDate = date.toISOString();
     try {
       const subRenew = await axios.patch(
         `https://graph.microsoft.com/v1.0/subscriptions/${id}`,
         { expirationDateTime: renewDate },
-        { header: { Authorization: `Bearer ${token}` } },
+        { headers: { Authorization: `Bearer ${token}` } },
       );
+      res.status(202).type('text/plain').send('Renewing subscription');
     } catch (err) {
-      console.log(`Failed to renew Subscription: ${err}`);
+      console.log(`Failed to renew Subscription: ${err}`, res.textContent);
+      res.status(`${res.statusCode}`).send(err);
     }
   }
 };
