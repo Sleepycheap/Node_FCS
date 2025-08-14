@@ -1,6 +1,8 @@
 import { getEmail } from '../utils/email.js';
 import { getSubject } from './emailController.js';
 import { captureResource } from '../utils/email.js';
+import axios from 'axios';
+import { getAccessToken } from './authController.js';
 
 export const getNotifications = (req, res) => {
   const validationToken = req.query.validationToken;
@@ -23,12 +25,22 @@ export const postNotifications = async (req, res) => {
       res.status(202).send('Sending 202');
       const resource = req.body.value[0].resource;
       console.log(`🔔 Received notifications: ${resource}`);
-      await captureResource(resource);
+      const token = await getAccessToken();
+      const call = await axios.get(
+        `https://graph.microsoft.com/v1.0/${resource}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      const sender = call.data.sender.emailAddress.address;
+      const sub = call.data.subject;
       //const subject = await getSubject(resource);
-      //await getEmail(resource);
+      await getEmail(resource, sender, sub);
     } catch (err) {
       console.log(`Email received, but cannot get data!: ${err}`);
       res.status(503).send();
     }
   }
 };
+
+//export const getSender = async

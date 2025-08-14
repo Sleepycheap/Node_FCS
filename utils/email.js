@@ -3,10 +3,14 @@ import axios from 'axios';
 import nodemailer from 'nodemailer';
 import { createEmail, getSubject } from '../controllers/emailController.js';
 import jsdom from 'jsdom';
+import {
+  sendConfirm,
+  sendDenial,
+} from '../controllers/confirmationController.js';
 const { JSDOM } = jsdom;
 
 // Gets the email forwarded to Redirect
-export const getEmail = async (resource) => {
+export const getEmail = async (resource, sender, sub) => {
   const token = await getAccessToken();
   try {
     const url = `https://graph.microsoft.com/v1.0/${resource}/attachments`;
@@ -26,6 +30,7 @@ export const getEmail = async (resource) => {
       const contentType = value.contentType;
       const id = value.id;
       let n_subject = value.name.split(': ', -1);
+      console.log(`N_SUB" ${n_subject}`);
       const sbjt = (n_subject[0] = 'RE,'
         ? 'FW:' + ' ' + n_subject[1]
         : 'FW:' + ' ' + n_subject);
@@ -78,7 +83,7 @@ export const getEmail = async (resource) => {
           };
 
           // SAVES EMAIL TO DATABASE
-          await createEmail(processedEmail);
+          await createEmail(processedEmail, sender, sub);
         } catch (err) {
           console.error(`Failed to get attachment properties: ${err}`);
         }
@@ -93,7 +98,7 @@ export const getEmail = async (resource) => {
   return token;
 };
 
-export const smtpSend = async (processedEmail) => {
+export const smtpSend = async (processedEmail, sender) => {
   console.log('SENDING EMAIL');
   // NODEMAILER USES STMP2GO TO SEND EMAIL
   const transporter = nodemailer.createTransport({
@@ -129,13 +134,17 @@ export const smtpSend = async (processedEmail) => {
       `Email Data: ${processedEmail}`,
     );
     console.log('Preview URL: %s', nodemailer.getTestMessageUrl(email));
+    await sendConfirm(sender, sub);
   } catch (err) {
     console.log('Error while sending email', err);
+    await sendDenial(sender, sub);
   }
   return;
 };
 
-export const captureResource = async (resource) => {
+export const captureResource = async (req, res) => {
+  const resource = req.body.value[0].resource;
+  console.log(`RES: ${resource}`);
   const token = await getAccessToken();
   const call = await axios.get(`https://graph.microsoft.com/v1/${resource}`, {
     headers: { Authorization: `Bearer ${token}` },

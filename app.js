@@ -13,6 +13,7 @@ import { rateLimit } from 'express-rate-limit';
 import formsRouter from './routes/formsRouter.js';
 import formLifeRouter from './routes/formLifeRouter.js';
 import { formLifeCycle } from './controllers/formsController.js';
+import apiRouter from './routes/apiRouter.js';
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.use('/lifecycleNotifications', lifecycleRouter);
 app.use('/test', testsRouter);
 app.use('/forms', formsRouter);
 app.use('/formLifecycle', formLifeRouter);
+app.use('/api', apiRouter);
 //app.use('/saveEmail', emailRouter);
 
 export default app;
