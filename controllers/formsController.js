@@ -14,9 +14,9 @@ export const getNotifications = (req, res) => {
 export const sendForm = async (req, res) => {
   const validationToken = req.query.validationToken;
   res.status(202).type('text/plain').send(validationToken);
-  const resource = req.body.value[0].resource;
-  console.log('📜 New Form Received!');
   try {
+    const resource = req.body.value[0].resource;
+    console.log('📜 New Form Received!');
     const token = await getAccessToken();
     const url = `https://graph.microsoft.com/v1.0/${resource}`;
     const email = await axios.get(url, {
@@ -34,7 +34,7 @@ export const sendForm = async (req, res) => {
     // const postBody2 = postBody.split('</html>')[0];
     // console.log(`💥🔔Post2: ${postBody2}`);
     // const body = preBody2 + postBody2;
-    console.log(`Data: ${preBody2}`);
+    //console.log(`Data: ${preBody2}`);
     //console.log(`Body: ${body}`);
   } catch (err) {
     console.log(`Err: ${err}`);

@@ -3,8 +3,9 @@ import { getSubject } from './emailController.js';
 import { captureResource } from '../utils/email.js';
 import axios from 'axios';
 import { getAccessToken } from './authController.js';
+import { sendDenial } from './confirmationController.js';
 
-export const getNotifications = (req, res) => {
+export const getNotifications = async (req, res) => {
   const validationToken = req.query.validationToken;
   if (validationToken) {
     res.status(200).type('text/plain').send(validationToken);
@@ -37,7 +38,8 @@ export const postNotifications = async (req, res) => {
       //const subject = await getSubject(resource);
       await getEmail(resource, sender, sub);
     } catch (err) {
-      console.log(`Email received, but cannot get data!: ${err}`);
+      console.log(`NC: 40  Email received, but cannot get data!: ${err}`);
+      await sendDenial(sender, sub, err);
       res.status(503).send();
     }
   }

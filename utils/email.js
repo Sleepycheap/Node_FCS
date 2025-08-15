@@ -20,36 +20,38 @@ export const getEmail = async (resource, sender, sub) => {
     });
 
     const subject = await getSubject(resource);
+    let lower = '';
+    if (subject.includes('Fw:')) {
+      lower = true;
+    } else {
+      lower = false;
+    }
 
-    //
+    console.log(`Lower: ${lower}`);
+
     const data = notification.data.value;
-
-    // FILTERS FOR FORWARDED EMAIL
 
     for (const value of data) {
       const contentType = value.contentType;
       const id = value.id;
-      let n_subject = value.name.split(': ', -1);
-      console.log(`N_SUB" ${n_subject}`);
-      const sbjt = (n_subject[0] = 'RE,'
-        ? 'FW:' + ' ' + n_subject[1]
-        : 'FW:' + ' ' + n_subject);
-      console.log(`TEST: ${sbjt}`);
-      // const test = n_subject[1];
-      // console.log(`TEST: ${test}`);
-      //const sub = n_subject.split(',');
-      //console.log(`SUB: ${sub}`);
-      // if (n_subject.includes('RE,')) {
-      //   const split = n_subject.split(',');
-      //   const sub = split[1];
-      //   let sbjt = `FW:` + ' ' + sub;
-      //   console.log(`RE: ${sbjt}`);
-      // } else {
-      //   let sbjt = `FW:` + ' ' + n_subject;
-      //   console.log(`NO RE: ${sbjt}`);
-      // }
+      // let n_subject = value.name.split(': ', -1);
+      let n_subject = value.name;
 
-      if (sbjt === subject) {
+      let re = '';
+
+      if (n_subject.includes('Re:')) {
+        re = true;
+      } else {
+        re = false;
+      }
+
+      const attSubject = (re = true ? 'RE:' + ' ' + subject : subject);
+
+      const sbjt = (lower = true
+        ? 'Fw:' + ' ' + n_subject
+        : 'FW:' + ' ' + n_subject);
+
+      if (sbjt === attSubject) {
         // Checks to find attached email. Attachment name should match subject of sent email
         console.log(`INCOMING EMAIL: ${subject}`);
         try {
@@ -85,20 +87,24 @@ export const getEmail = async (resource, sender, sub) => {
           // SAVES EMAIL TO DATABASE
           await createEmail(processedEmail, sender, sub);
         } catch (err) {
-          console.error(`Failed to get attachment properties: ${err}`);
+          console.error(
+            `GETEMAIL: 90 Failed to get attachment properties: ${err}`,
+          );
+          await sendDenial(sender, sub, err);
         }
       } else {
-        console.log(`NOT MATCH: ${sbjt} || ${subject}`);
+        console.log(`NOT MATCH: ${sbjt} || ${attSubject}`);
       }
     }
   } catch (err) {
     console.error('Failed to get email:', err.message);
+    await sendDenial(sender, sub, err);
     throw err;
   }
   return token;
 };
 
-export const smtpSend = async (processedEmail, sender) => {
+export const smtpSend = async (processedEmail, sender, sub) => {
   console.log('SENDING EMAIL');
   // NODEMAILER USES STMP2GO TO SEND EMAIL
   const transporter = nodemailer.createTransport({
@@ -123,7 +129,7 @@ export const smtpSend = async (processedEmail, sender) => {
     // Creates email and sends to helpdesk
     const email = await transporter.sendMail({
       from: processedEmail.sender,
-      to: 'anthony@fcskc.com', //process.env.SMTP_TO_ADDRESS
+      to: process.env.SMTP_TO_ADDRESS,
       subject: processedEmail.subject,
       html: processedEmail.body,
       attachments: processedAttachments,
@@ -137,7 +143,7 @@ export const smtpSend = async (processedEmail, sender) => {
     await sendConfirm(sender, sub);
   } catch (err) {
     console.log('Error while sending email', err);
-    await sendDenial(sender, sub);
+    await sendDenial(sender, sub, err);
   }
   return;
 };
