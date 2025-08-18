@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon server.js&&ngrok http --url=balanced-fully-moccasin.ngrok-free.app 3000"
+    "start": "node server.js"
   },
   "author": "Anthony Vauthier",
   "license": "ISC",
