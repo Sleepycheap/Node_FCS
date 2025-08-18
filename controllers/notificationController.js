@@ -1,6 +1,5 @@
 import { getEmail } from '../utils/email.js';
 import { getSubject } from './emailController.js';
-import { captureResource } from '../utils/email.js';
 import axios from 'axios';
 import { getAccessToken } from './authController.js';
 import { sendDenial } from './confirmationController.js';
@@ -22,7 +21,6 @@ export const postNotifications = async (req, res) => {
   } else {
     try {
       // This is triggered when new email comes in
-
       res.status(202).send('Sending 202');
       const resource = req.body.value[0].resource;
       console.log(`🔔 Received notifications: ${resource}`);
@@ -35,7 +33,7 @@ export const postNotifications = async (req, res) => {
       );
       const sender = call.data.sender.emailAddress.address;
       const sub = call.data.subject;
-      //const subject = await getSubject(resource);
+
       await getEmail(resource, sender, sub);
     } catch (err) {
       console.log(`NC: 40  Email received, but cannot get data!: ${err}`);
@@ -44,5 +42,3 @@ export const postNotifications = async (req, res) => {
     }
   }
 };
-
-//export const getSender = async

@@ -1,6 +1,5 @@
 import express from 'express';
 import pino from 'pino-http';
-//import morgan from 'morgan';
 import graphRouter from './routes/graphRouter.js';
 import notificationRouter from './routes/notificationRouter.js';
 import lifecycleRouter from './routes/lifecycleRouter.js';
@@ -21,7 +20,7 @@ const app = express();
 app.use(pino());
 
 const limiter = rateLimit({
-  limit: 50,
+  limit: 15,
   windowMs: 60 * 60 * 1000, // minutes * seconds * milliseconds
   message: 'Too many requests from this IP, please try again in an hour!',
 });

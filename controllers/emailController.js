@@ -3,6 +3,7 @@ import { APIFeatures } from './../utils/apiFeatures.js';
 import axios from 'axios';
 import { getAccessToken } from './authController.js';
 import { smtpSend } from '../utils/email.js';
+import { sendDenial } from './confirmationController.js';
 
 // Gets subject line to compare against attachment. If subject and attachment match, script proceeds
 export const getSubject = async (resource) => {
@@ -13,9 +14,14 @@ export const getSubject = async (resource) => {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = r.data;
-    const subject = r.data.subject;
+    const sub = r.data.subject;
+    // /^F(W|w):|R(E|e):/
+    const subject1 = sub.replace(/^(FW|Fw|RE|Re): /, '');
+    const subject = subject1.includes('[EXT')
+      ? subject1.split('[EXT]')[1].trim()
+      : subject1.trim();
     //console.log(`Data: ${data}`);
-    //console.log(`Subject: ${subject}`);
+    // console.log(`Subject: ${subject}`);
     return subject;
   } catch (err) {
     console.log(`Error: ${err}`);
@@ -39,6 +45,7 @@ export const createEmail = async (processedEmail, sender, sub) => {
     await smtpSend(processedEmail, sender, sub);
   } catch (err) {
     console.log(err);
+    await sendDenial(processedEmail, sub, err);
     return;
   }
 };

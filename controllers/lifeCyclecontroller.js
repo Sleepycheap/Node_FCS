@@ -26,10 +26,3 @@ export const lifecycle = async (req, res) => {
     }
   }
 };
-
-// export const lifecycle = (req, res) => {
-//   const validationToken = req.query.validationToken;
-//   res.status(202).type('text/plain').send(validationToken);
-//   //res.status('202').send('received subscription');
-//   console.log(`REQ: ${JSON.stringify(req.body)}`);
-// };
