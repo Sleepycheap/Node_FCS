@@ -13,6 +13,8 @@ import formsRouter from './routes/formsRouter.js';
 import formLifeRouter from './routes/formLifeRouter.js';
 import { formLifeCycle } from './controllers/formsController.js';
 import apiRouter from './routes/apiRouter.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const app = express();
 
@@ -33,10 +35,16 @@ app.use(mongoSanitize());
 //app.use(xss);
 app.use(helmet());
 
-app.use(express.static('./public'));
+app.use(express.static('public'));
 
 app.use('/graph', graphRouter);
 
+app.get('/', function (req, res, next) {
+  const __filename = fileURLToPath(import.meta.utl);
+  const __dirname = path.dirname(__filename);
+  const _restfile = path.join(__dirname, 'index.html');
+  res.sendFile(_restfile);
+});
 app.use('/notifications', notificationRouter);
 app.use('/emailsend', emailsendRouter);
 app.use('/lifecycleNotifications', lifecycleRouter);
