@@ -39,11 +39,14 @@ app.use(express.static('public'));
 
 app.use('/graph', graphRouter);
 
-app.get('/', function (req, res, next) {
-  const __filename = fileURLToPath(import.meta.utl);
-  const __dirname = path.dirname(__filename);
-  const _restfile = path.join(__dirname, 'index.html');
-  res.sendFile(_restfile);
+// app.get('/', function (req, res, next) {
+//   const __filename = fileURLToPath(import.meta.url);
+//   const __dirname = path.dirname(__filename);
+//   const _restfile = path.join(__dirname, 'index.html');
+//   res.sendFile(_restfile);
+// });
+app.get('/', (req, res) => {
+  res.sendFile(path.resolve('public/index.html'));
 });
 app.use('/notifications', notificationRouter);
 app.use('/emailsend', emailsendRouter);

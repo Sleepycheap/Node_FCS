@@ -17,19 +17,21 @@ mongoose
   .connect(DB, {})
   .then(() => console.log(`${process.env.NODE_ENV}: DB connection succesful`));
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8000;
 const server = app.listen(port, () => {
   console.log(`App running on port ${port}...`);
 });
 
-(async function () {
-  const listener = await ngrok.forward({
-    addr: process.env.PORT || 3000,
-    authtoken: process.env.NGROK_AUTHTOKEN,
-    domain: process.env.NGROK_DOMAIN,
-  });
-  console.log(`Ingress established at ${listener.url()}`);
-})();
+if (process.env.NODE_ENV !== 'production') {
+  (async function () {
+    const listener = await ngrok.forward({
+      addr: process.env.PORT || 3000,
+      authtoken: process.env.NGROK_AUTHTOKEN,
+      domain: process.env.NGROK_DOMAIN,
+    });
+    console.log(`Ingress established at ${listener.url()}`);
+  })();
+}
 process.stdin.resume();
 
 process.on('unhandledRejection', (err) => {
