@@ -39,7 +39,7 @@ app.use(helmet());
 
 app.use(express.static('public'));
 
-app.use('/graph', graphRouter);
+//app.use('/graph', graphRouter);
 
 // app.get('/', function (req, res, next) {
 //   const __filename = fileURLToPath(import.meta.url);
