@@ -2,10 +2,11 @@ import dotenv from 'dotenv';
 import app from './app.js';
 import ngrok from '@ngrok/ngrok';
 import mongoose from 'mongoose';
+import logger from './logger.js';
 
 process.on('uncaughtException', (err) => {
   console.log('UNCAUGHT EXCEPTION! Shutting down...');
-  console.log(err.name, err.message);
+  logger.fatal(err, 'uncaught exception!');
   process.exit(1);
 });
 
@@ -38,7 +39,7 @@ process.stdin.resume();
 
 process.on('unhandledRejection', (err) => {
   console.log('UNHANDLED REJECTION! Shutting down...');
-  console.log(err.name, err.message);
+  logger.fatal(err, 'UNCAUGHT EXCEPTION!');
   server.close(() => {
     process.exit(1);
   });

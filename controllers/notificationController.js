@@ -9,6 +9,7 @@ export const getNotifications = async (req, res) => {
   if (validationToken) {
     res.status(200).type('text/plain').send(validationToken);
   } else {
+    logger.error('GET /notification failed');
     res.status(400).send('Missing Validation Token');
   }
 };
@@ -36,7 +37,7 @@ export const postNotifications = async (req, res) => {
 
       await getEmail(resource, sender, sub);
     } catch (err) {
-      console.log(`NC: 40  Email received, but cannot get data!: ${err}`);
+      logger.error(err);
       await sendDenial(sender, sub, err);
       res.status(503).send();
     }

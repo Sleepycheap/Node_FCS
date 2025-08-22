@@ -3,6 +3,7 @@ import axios from 'axios';
 import { getAccessToken } from './authController.js';
 import { lifecycle } from './lifeCyclecontroller.js';
 import { postNotifications } from './notificationController.js';
+import logger from '../logger.js';
 
 export const createSubscription = async (req, res) => {
   const token = await getAccessToken();
@@ -23,7 +24,7 @@ export const createSubscription = async (req, res) => {
       },
     );
   } catch (err) {
-    console.error(`Failed to create subscription! ${err}`);
+    logger.error(err);
     throw err;
   }
 };
@@ -45,7 +46,7 @@ export const renewSubscription = async (req, res) => {
     );
     console.log(renewDate);
   } catch (err) {
-    console.error(`Failed to renew subscription! ${err}`);
+    logger.error(err);
     throw err;
   }
 };

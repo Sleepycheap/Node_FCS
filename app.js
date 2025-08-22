@@ -14,12 +14,14 @@ import formLifeRouter from './routes/formLifeRouter.js';
 import { formLifeCycle } from './controllers/formsController.js';
 import apiRouter from './routes/apiRouter.js';
 import path from 'path';
+import logger from './logger.js';
+import pinoHTTP from 'pino-http';
 import { fileURLToPath } from 'url';
 
 const app = express();
 
 //app.use(morgan('dev'));
-app.use(pino());
+app.use(pinoHTTP({ logger }));
 
 const limiter = rateLimit({
   limit: 15,

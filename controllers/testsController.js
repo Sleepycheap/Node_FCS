@@ -4,6 +4,7 @@ import jsdom from 'jsdom';
 import { getAccessToken } from './authController.js';
 import axios from 'axios';
 import path from 'path';
+import logger from '../logger.js';
 const { JSDOM } = jsdom;
 
 export const createEmail = async (req, res, next) => {
@@ -17,6 +18,7 @@ export const createEmail = async (req, res, next) => {
       },
     });
   } catch (err) {
+    logger.error(err);
     res.status(400).json({
       status: 'fail',
       message: `Error: ${err}`,
@@ -46,7 +48,7 @@ export const getEmails = async (req, res) => {
   });
 };
 
-export const printHTML = (res, res) => {
+export const printHTML = (req, res) => {
   res.sendFile(path.resolve('public/test.html'));
 };
 
@@ -64,7 +66,7 @@ export const renewSubscription = async (req, res) => {
     );
     res.status(202).type('text/plain').send('Renewing subscription');
   } catch (err) {
-    console.log(`Failed to renew Subscription: ${err}`, res.textContent);
+    logger.error(err);
     res.status(`${res.statusCode}`).send(err);
   }
 };
