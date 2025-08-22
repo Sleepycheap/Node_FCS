@@ -15,7 +15,9 @@ const DB = process.env.DATABASE;
 
 mongoose
   .connect(DB, {})
-  .then(() => console.log(`${process.env.NODE_ENV}: DB connection succesful`));
+  .then(() =>
+    console.log(`${process.env.NODE_ENV}: TEST: DB connection succesful`),
+  );
 
 const port = process.env.PORT || 8000;
 const server = app.listen(port, () => {
