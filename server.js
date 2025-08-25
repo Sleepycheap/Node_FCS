@@ -25,7 +25,7 @@ const server = app.listen(port, () => {
   console.log(`App running on port ${port}...`);
 });
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV === 'development') {
   (async function () {
     const listener = await ngrok.forward({
       addr: process.env.PORT || 3000,
