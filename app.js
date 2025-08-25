@@ -57,6 +57,9 @@ app.use('/test', testsRouter);
 app.use('/forms', formsRouter);
 app.use('/formLifecycle', formLifeRouter);
 app.use('/api', apiRouter);
+app.get('*', (req, res) => {
+  res.status(404).send('Route not found!');
+});
 //app.use('/saveEmail', emailRouter);
 
 export default app;
