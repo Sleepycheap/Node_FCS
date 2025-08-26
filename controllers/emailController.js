@@ -19,7 +19,7 @@ export const getSubject = async (resource) => {
     const subject1 = sub.replace(
       /([\[\(] *)?(RE|FWD?) *([-:;)\]][ :;\])-]*|$)|\]+ *$ /gim,
     );
-    console.log(`Incoming subject: ${subject}`);
+    console.log(`Incoming subject: ${subject1}`);
     const subject = subject1.includes('[EXT')
       ? subject1.split('[EXT]')[1]
       : subject1;
