@@ -24,7 +24,7 @@ export const getSubject = async (resource) => {
       ? subject1.split('[EXT]')[1]
       : subject1;
     //console.log(`Data: ${data}`);
-    // console.log(`Subject: ${subject}`);
+    console.log(`Subject: ${subject}`);
     return subject;
   } catch (err) {
     console.log(`Error: ${err}`);

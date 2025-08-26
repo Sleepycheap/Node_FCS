@@ -22,7 +22,7 @@ export const getEmail = async (resource, sender, sub) => {
     const data = notification.data.value[0];
     const id = data.id;
     const attName1 = data.name.replace(
-      /([\[\(] *)?(RE|FWD?) *([-:;)\]][ :;\])-]*|$)|\]+ *$ /gim,
+      /?:([\[\(] *)?(RE|FWD?) *([-:;)\]][ :;\])-]*|$)|\]+ *$ /gim,
     );
     const attName = attName1.includes('[EXT')
       ? attName1.split('[EXT]')[1]
@@ -71,7 +71,7 @@ export const getEmail = async (resource, sender, sub) => {
       }
     } else {
       console.log(`NOT MATCH: ${attName} || ${subject}`);
-      await sendDenial(sender, sub, err);
+      await sendDenial(sender, sub);
     }
   } catch (err) {
     console.error('Failed to get email:', err.message);
