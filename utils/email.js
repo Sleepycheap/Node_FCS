@@ -21,9 +21,7 @@ export const getEmail = async (resource, sender, sub) => {
     const subject = await getSubject(resource);
     const data = notification.data.value[0];
     const id = data.id;
-    const attName1 = data.name.replace(
-      /(?:[\[\(] *)?(RE|FWD?) *([-:;)\]][ :;\])-]*|$)|\]+ *$ /gim,
-    );
+    const attName1 = data.name.replace(/^fw:\s|re:\s/gim, '');
     const attName = attName1.includes('[EXT')
       ? attName1.split('[EXT]')[1]
       : attName1;
