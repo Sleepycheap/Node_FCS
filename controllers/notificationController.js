@@ -3,6 +3,7 @@ import { getSubject } from './emailController.js';
 import axios from 'axios';
 import { getAccessToken } from './authController.js';
 import { sendDenial } from './confirmationController.js';
+import logger from '../logger.js';
 
 export const getNotifications = async (req, res) => {
   const validationToken = req.query.validationToken;
