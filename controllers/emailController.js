@@ -15,11 +15,14 @@ export const getSubject = async (resource) => {
     });
     const data = r.data;
     const sub = r.data.subject;
-    // /^F(W|w):|R(E|e):/
-    const subject1 = sub.replace(/^(FW|Fw|RE|Re): /, '');
+    // ^(FW|Fw|RE|Re):\s
+    const subject1 = sub.replace(
+      /([\[\(] *)?(RE|FWD?) *([-:;)\]][ :;\])-]*|$)|\]+ *$ /gim,
+    );
+    console.log(`Incoming subject: ${subject}`);
     const subject = subject1.includes('[EXT')
-      ? subject1.split('[EXT]')[1].trim()
-      : subject1.trim();
+      ? subject1.split('[EXT]')[1]
+      : subject1;
     //console.log(`Data: ${data}`);
     // console.log(`Subject: ${subject}`);
     return subject;
