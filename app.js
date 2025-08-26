@@ -7,7 +7,6 @@ import testsRouter from './routes/testsRouter.js';
 import emailsendRouter from './routes/emailsendRouter.js';
 import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss';
-//import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 import formsRouter from './routes/formsRouter.js';
 import formLifeRouter from './routes/formLifeRouter.js';
@@ -35,7 +34,6 @@ app.use(express.json());
 
 app.use(mongoSanitize());
 //app.use(xss);
-//app.use(helmet());
 
 app.use(express.static('public'));
 
