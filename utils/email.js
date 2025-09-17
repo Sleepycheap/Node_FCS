@@ -22,13 +22,13 @@ export const getEmail = async (resource, sender, sub) => {
     const data = notification.data.value[0];
     const id = data.id;
     const attName1 = data.name.replace(/^fw:\s|re:\s/gim, '');
-    const attName = attName1.includes('[EXT')
+    const attName = attName1.startsWith('[EXT')
       ? attName1.split('[EXT]')[1]
       : attName1;
 
     console.log(`Outgoing subject: ${attName}`);
 
-    if (attName === subject) {
+    if (attName === subject && subject !== 'undefined') {
       console.log('Match!');
       try {
         const attRes = await axios.get(
@@ -67,6 +67,9 @@ export const getEmail = async (resource, sender, sub) => {
         console.error(`Failed to get attachment properties: ${err}`);
         await sendDenial(sender, sub, err);
       }
+    } else if (subject === 'undefined') {
+      console.log(`Check incoming email! Subject: ${subject}`);
+      await sendDenial(sender, sub);
     } else {
       console.log(`NOT MATCH: ${attName} || ${subject}`);
       await sendDenial(sender, sub);
