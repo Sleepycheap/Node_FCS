@@ -48,6 +48,7 @@ app.use(express.static('public'));
 //   res.sendFile(_restfile);
 // });
 app.get('/', (req, res) => {
+  console.log('Hello There!');
   res.sendFile(path.resolve('public/index.html'));
 });
 app.use('/notifications', notificationRouter);
@@ -57,9 +58,9 @@ app.use('/test', testsRouter);
 app.use('/forms', formsRouter);
 app.use('/formLifecycle', formLifeRouter);
 app.use('/api', apiRouter);
-app.get('/', (req, res) => {
-  res.status(200).send('Hello! You are connected to ReDirect');
-});
+// app.get('/', (req, res) => {
+//   res.status(200).send('Hello! You are connected to ReDirect');
+// });
 app.get('*', (req, res) => {
   res.status(404).send('Route not found!');
 });
