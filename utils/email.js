@@ -109,7 +109,7 @@ export const smtpSend = async (processedEmail, sender, sub, parser) => {
       from: processedEmail.sender,
       to: process.env.SMTP_TO_ADDRESS,
       subject: processedEmail.subject,
-      parser: parser,
+      text: parser,
       html: processedEmail.body,
       attachments: processedAttachments,
     });
