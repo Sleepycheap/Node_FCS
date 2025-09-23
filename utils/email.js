@@ -10,7 +10,7 @@ import {
 const { JSDOM } = jsdom;
 
 // Gets the email forwarded to Redirect
-export const getEmail = async (resource, sender, sub) => {
+export const getEmail = async (resource, sender, sub, parser) => {
   const token = await getAccessToken();
   try {
     const url = `https://graph.microsoft.com/v1.0/${resource}/attachments`;
@@ -55,6 +55,7 @@ export const getEmail = async (resource, sender, sub) => {
         const processedEmail = {
           sender: data.sender.emailAddress.address,
           subject: data.subject,
+          parser: parser,
           body: body,
           attachments: data.attachments,
           dateReceived: data.receivedDataTime,
@@ -62,7 +63,7 @@ export const getEmail = async (resource, sender, sub) => {
         };
 
         // SAVES EMAIL TO DATABASE
-        await createEmail(processedEmail, sender, sub);
+        await createEmail(processedEmail, sender, sub, parser);
       } catch (err) {
         console.error(`Failed to get attachment properties: ${err}`);
         await sendDenial(sender, sub, err);
@@ -81,7 +82,7 @@ export const getEmail = async (resource, sender, sub) => {
   return token;
 };
 
-export const smtpSend = async (processedEmail, sender, sub) => {
+export const smtpSend = async (processedEmail, sender, sub, parser) => {
   console.log('SENDING EMAIL');
   // NODEMAILER USES STMP2GO TO SEND EMAIL
   const transporter = nodemailer.createTransport({
@@ -108,6 +109,7 @@ export const smtpSend = async (processedEmail, sender, sub) => {
       from: processedEmail.sender,
       to: process.env.SMTP_TO_ADDRESS,
       subject: processedEmail.subject,
+      parser: parser,
       html: processedEmail.body,
       attachments: processedAttachments,
     });

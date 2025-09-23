@@ -30,12 +30,13 @@ export const getSubject = async (resource) => {
 };
 
 // Saves email to database
-export const createEmail = async (processedEmail, sender, sub) => {
+export const createEmail = async (processedEmail, sender, sub, parser) => {
   try {
     const newEmail = await Email.create([
       {
         sender: processedEmail.sender,
         subject: processedEmail.subject,
+        parser: parser,
         body: processedEmail.body,
         attachments: processedEmail.attachments,
         dateReceived: processedEmail.dateReceived,
@@ -43,7 +44,7 @@ export const createEmail = async (processedEmail, sender, sub) => {
       },
     ]);
     // Sends email if not already saved to database
-    await smtpSend(processedEmail, sender, sub);
+    await smtpSend(processedEmail, sender, sub, parser);
   } catch (err) {
     console.log(err);
     await sendDenial(processedEmail, sub, err);

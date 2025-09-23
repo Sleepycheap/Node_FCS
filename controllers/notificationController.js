@@ -35,8 +35,10 @@ export const postNotifications = async (req, res) => {
       );
       const sender = call.data.sender.emailAddress.address;
       const sub = call.data.subject;
-
-      await getEmail(resource, sender, sub);
+      const parser = call.data.bodyPreview;
+      console.log(`Parser: ${parser}`);
+      await getEmail(resource, sender, sub, parser);
+      // return { parser, sender, sub };
     } catch (err) {
       logger.error(err);
       await sendDenial(sender, sub, err);
