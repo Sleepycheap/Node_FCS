@@ -48,7 +48,8 @@ export const createEmail = async (processedEmail, sender, sub, parser) => {
   } catch (err) {
     console.log(`Err: ${err}`);
     let errMsg = '';
-    const msg = err.split(':')[0];
+    const error = err;
+    const msg = error.split(':')[0];
     console.log(`msg: ${msg}`);
     if (msg === 'MongoServerError') {
       errMsg = 'Duplicate! This email has already been sent!';
