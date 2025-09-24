@@ -48,16 +48,13 @@ export const createEmail = async (processedEmail, sender, sub, parser) => {
   } catch (err) {
     console.log(`Err: ${err}`);
     let errMsg = '';
-    function splitErr() {
-      if (err.includes('E11000')) {
-        errMsg =
-          'Duplicate! This email has already been ReDirected to helpdesk!';
-      } else {
-        errMsg = err;
-      }
-      return errMsg;
+    const msg = err.split(':')[0];
+    console.log(`msg: ${msg}`);
+    if (msg === 'MongoServerError') {
+      errMsg = 'Duplicate! This email has already been sent!';
+    } else {
+      errMsg = err;
     }
-    splitErr();
     console.log(`Send error: ${errMsg}`);
     await sendDenial(processedEmail, sub, errMsg);
     return;
