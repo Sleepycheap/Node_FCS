@@ -33,7 +33,7 @@ export const sendConfirm = async (sender, sub) => {
   }
 };
 
-export const sendDenial = async (sender, sub, err) => {
+export const sendDenial = async (sender, sub, errMsg) => {
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT || 2525,
@@ -58,7 +58,7 @@ export const sendDenial = async (sender, sub, err) => {
       from: process.env.LOG_ADDRESS,
       to: recipient, //process.env.SMTP_TO_ADDRESS
       subject: `${sub} was not forwarded`,
-      text: `Error: ${err} || ${sender} tried to forward ${sub} but it failed. Please check logs`,
+      text: `Error: ${errMsg} || ${sender} tried to forward ${sub} but it failed. Please check logs`,
     });
   } catch (err) {
     console.log('Failed to send email to forwarder', err);

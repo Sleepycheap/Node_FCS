@@ -46,8 +46,14 @@ export const createEmail = async (processedEmail, sender, sub, parser) => {
     // Sends email if not already saved to database
     await smtpSend(processedEmail, sender, sub, parser);
   } catch (err) {
-    console.log(`Send error: ${err}`);
-    await sendDenial(processedEmail, sub, err);
+    let errMsg = '';
+    if (err.startsWith(MongoServerError)) {
+      errMsg = 'Duplicate! This email has already been ReDirected to helpdesk!';
+    } else {
+      errMsg = err;
+    }
+    console.log(`Send error: ${errMsg}`);
+    await sendDenial(processedEmail, sub, errMsg);
     return;
   }
 };
