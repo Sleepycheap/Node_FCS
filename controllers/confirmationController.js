@@ -56,7 +56,7 @@ export const sendDenial = async (sender, sub, err) => {
     // Creates email and sends to helpdesk
     const email = await transporter.sendMail({
       from: process.env.LOG_ADDRESS,
-      to: recipient, //process.env.SMTP_TO_ADDRESS
+      to: 'anthony@fcskc.com', //process.env.SMTP_TO_ADDRESS
       subject: `${sub} was not forwarded`,
       text: `Error: ${err} || ${sender} tried to forward ${sub} but it failed. Please check logs`,
     });
