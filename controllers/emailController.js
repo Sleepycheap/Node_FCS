@@ -47,7 +47,7 @@ export const createEmail = async (processedEmail, sender, sub, parser) => {
     await smtpSend(processedEmail, sender, sub, parser);
   } catch (err) {
     let errMsg = '';
-    if (err.startsWith(MongoServerError)) {
+    if (err.includes('E11000')) {
       errMsg = 'Duplicate! This email has already been ReDirected to helpdesk!';
     } else {
       errMsg = err;
