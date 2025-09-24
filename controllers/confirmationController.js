@@ -44,19 +44,20 @@ export const sendDenial = async (sender, sub, errMsg) => {
     },
   });
 
-  let recipient = '';
+  // let recipient = '';
 
-  if (sub.includes('[SUPPORT]')) {
-    recipient = process.env.SUPPORT_ADDRESS;
-  } else {
-    recipient = sender;
-  }
+  // if (sub.includes('[SUPPORT]')) {
+  //   recipient = process.env.SUPPORT_ADDRESS;
+  // } else {
+  //   recipient = sender;
+  // }
 
   try {
     // Creates email and sends to helpdesk
     const email = await transporter.sendMail({
       from: process.env.LOG_ADDRESS,
-      to: recipient, //process.env.SMTP_TO_ADDRESS
+      to: sender,
+      // to: recipient, //process.env.SMTP_TO_ADDRESS
       subject: `${sub} was not forwarded`,
       text: `Error: ${errMsg} || ${sender} tried to forward ${sub} but it failed. Please check logs`,
     });
