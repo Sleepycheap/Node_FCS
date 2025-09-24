@@ -45,17 +45,12 @@ export const getEmail = async (resource, sender, sub, parser) => {
         // Everying before Inky banner
         // console.log(`Body: ${data.body.content}`);
         const preBody = data.body.content.split('</head>')[1];
-        console.log(`Prebody: ${preBody}`);
         const preBody2 = preBody.split('<!-- BEGIN:IPW -->')[0];
-        console.log(`prebody2: ${preBody2}`);
 
         // Everything After Inky banner
         const postBody = data.body.content.split('<!-- END:IPW -->')[1];
-        console.log(`Postbody: ${postBody}`);
         const postBody2 = postBody.split('</html>')[0];
-        console.log(`postbody2: ${postBody2}`);
         const body = preBody2 + postBody2;
-        console.log(`Body: ${body}`);
 
         const processedEmail = {
           sender: data.sender.emailAddress.address,
