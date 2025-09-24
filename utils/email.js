@@ -43,6 +43,7 @@ export const getEmail = async (resource, sender, sub, parser) => {
 
         //// STRIPS INKY BANNER FROM EMAIL BODY, LEAVES ALL HTML
         // Everying before Inky banner
+        console.log(`Body: ${data.body.content}`);
         const preBody = data.body.content.split('</head>')[1];
         const preBody2 = preBody.split('<!-- BEGIN:IPW -->')[0];
 
