@@ -47,13 +47,14 @@ export const createEmail = async (processedEmail, sender, sub, parser) => {
     await smtpSend(processedEmail, sender, sub, parser);
   } catch (err) {
     const error = err.split(' ');
-    console.log(`Error: ${error}`);
-    const msg = error[1];
-    const errMsg =
-      msg === 'E11000'
-        ? 'Duplicate! This email has already been ReDirected to helpdesk!'
-        : err;
-    console.log(`errMsg: ${errMsg}`);
+    let errMsg = '';
+    if (err.code === 11000) {
+      errMsg = 'Duplicate! This email has already been ReDirected to helpdesk!';
+    } else {
+      errMsg = err.message || 'An expected error occured';
+    }
+    console.error(`Error: ${err}`);
+    console.error(`errMsg: ${errMsg}`);
     await sendDenial(processedEmail, sub, errMsg);
   }
 };
