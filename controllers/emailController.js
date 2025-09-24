@@ -46,16 +46,12 @@ export const createEmail = async (processedEmail, sender, sub, parser) => {
     // Sends email if not already saved to database
     await smtpSend(processedEmail, sender, sub, parser);
   } catch (err) {
-    console.log(`Err: ${err}`);
     let errMsg = '';
-    const error = err;
-    console.log(`Error: ${error}`);
-    const msg = error.split(':');
-    console.log(`msg: ${msg}`);
-    if (msg === 'MongoServerError') {
-      errMsg = 'Duplicate! This email has already been sent!';
-    } else {
-      errMsg = err;
+    if (
+      err ===
+      `MongoServerError: E11000 duplicate key error collection: FCS.emails index: sender_1_subject_1 dup key: { sender: ${sender}, subject: ${subject} }`
+    ) {
+      errMsg = 'Duplicate! This email has already been ReDirected to Helpdesk';
     }
     console.log(`Send error: ${errMsg}`);
     await sendDenial(processedEmail, sub, errMsg);
