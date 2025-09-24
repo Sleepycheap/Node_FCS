@@ -44,7 +44,7 @@ export const sendDenial = async (sender, sub, errMsg) => {
     },
   });
 
-  let recipient = sender;
+  let recipient = '';
 
   if (sub.includes('[SUPPORT]')) {
     recipient = process.env.SUPPORT_ADDRESS;
