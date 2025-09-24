@@ -46,7 +46,7 @@ export const createEmail = async (processedEmail, sender, sub, parser) => {
     // Sends email if not already saved to database
     await smtpSend(processedEmail, sender, sub, parser);
   } catch (err) {
-    console.log(err);
+    console.log(`Send error: ${err}`);
     await sendDenial(processedEmail, sub, err);
     return;
   }
