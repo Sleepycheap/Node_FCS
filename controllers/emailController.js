@@ -49,7 +49,7 @@ export const createEmail = async (processedEmail, sender, sub, parser) => {
     let errMsg = '';
     if (
       err ===
-      `MongoServerError: E11000 duplicate key error collection: FCS.emails index: sender_1_subject_1 dup key: { sender: ${sender}, subject: ${subject} }`
+      `MongoServerError: E11000 duplicate key error collection: FCS.emails index: sender_1_subject_1 dup key: { sender: ${sender}, subject: ${sub} }`
     ) {
       errMsg = 'Duplicate! This email has already been ReDirected to Helpdesk';
     }
