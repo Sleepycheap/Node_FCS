@@ -25,10 +25,11 @@ export const getEmail = async (resource, sender, sub, parser) => {
     const attName = attName1.startsWith('[EXT')
       ? attName1.split('[EXT]')[1]
       : attName1;
+    const emlName = attName.endsWith('.eml') ? attName.split('.')[0] : attName;
 
-    console.log(`Outgoing subject: ${attName}`);
+    console.log(`Outgoing subject: ${emlName}`);
 
-    if (attName === subject && subject !== 'undefined') {
+    if (emlName === subject && subject !== 'undefined') {
       console.log('Match!');
       try {
         const attRes = await axios.get(
@@ -72,7 +73,7 @@ export const getEmail = async (resource, sender, sub, parser) => {
       console.log(`Check incoming email! Subject: ${subject}`);
       await sendDenial(sender, sub);
     } else {
-      console.log(`NOT MATCH: ${attName} || ${subject}`);
+      console.log(`NOT MATCH: ${emlName} || ${subject}`);
       await sendDenial(sender, sub);
     }
   } catch (err) {
