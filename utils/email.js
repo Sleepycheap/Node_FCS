@@ -7,6 +7,7 @@ import {
   sendConfirm,
   sendDenial,
 } from '../controllers/confirmationController.js';
+import { simpleParser } from 'mailparser';
 const { JSDOM } = jsdom;
 
 // Gets the email forwarded to Redirect

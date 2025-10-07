@@ -4,6 +4,7 @@ import axios from 'axios';
 import { getAccessToken } from './authController.js';
 import { sendDenial } from './confirmationController.js';
 import logger from '../logger.js';
+import { simpleParser } from 'mailparser';
 
 export const getNotifications = async (req, res) => {
   const validationToken = req.query.validationToken;
@@ -33,11 +34,13 @@ export const postNotifications = async (req, res) => {
           headers: { Authorization: `Bearer ${token}` },
         },
       );
+      const emailTest = await simpleParser(call);
+      console.log(emailTest);
       const sender = call.data.sender.emailAddress.address;
       const sub = call.data.subject;
       const parser = call.data.bodyPreview;
       console.log(`Parser: ${parser}`);
-      await getEmail(resource, sender, sub, parser);
+      //await getEmail(resource, sender, sub, parser);
       // return { parser, sender, sub };
     } catch (err) {
       logger.error(err);
