@@ -71,7 +71,7 @@ export const getEmail = async (resource, sender, sub, parser) => {
         await createEmail(processedEmail, sender, sub, parser);
       } catch (err) {
         console.error(`Failed to get attachment properties: ${err}`);
-        console.log(`Data: ${processedEmail}`);
+        //console.log(`Data: ${processedEmail}`);
         await sendDenial(sender, sub, err);
       }
     } else if (subject === 'undefined') {

@@ -8,7 +8,7 @@ import logger from '../logger.js';
 export const getNotifications = async (req, res) => {
   const validationToken = req.query.validationToken;
   if (validationToken) {
-    res.status(200).type('text/plain').send(validationToken);
+    res.status(202).type('text/plain').send(validationToken);
   } else {
     logger.error('GET /notification failed');
     res.status(400).send('Missing Validation Token');
