@@ -52,6 +52,7 @@ export const getEmail = async (resource, sender, sub, parser) => {
         const postBody = data.body.content.split('<!-- END:IPW -->')[1];
         const postBody2 = postBody.split('</html>')[0];
         const body = preBody2 + postBody2;
+        console.log(`body: ${body}`);
 
         const processedEmail = {
           sender: data.sender.emailAddress.address,
