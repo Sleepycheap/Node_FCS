@@ -21,7 +21,6 @@ export const getEmail = async (resource, sender, sub, parser) => {
     const subject = await getSubject(resource);
     const data = notification.data.value[0];
     const id = data.id;
-    console.log(`id: ${id}`);
     const attName1 = data.name.replace(/^fw:\s|re:\s/gim, '');
     const attName = attName1.startsWith('[EXT')
       ? attName1.split('[EXT]')[1]
@@ -41,13 +40,11 @@ export const getEmail = async (resource, sender, sub, parser) => {
         );
 
         const eData = attRes;
-        console.log(eData);
         const data = eData.data.item;
-        console.log(`data: ${data}`);
 
         //// STRIPS INKY BANNER FROM EMAIL BODY, LEAVES ALL HTML
         // Everying before Inky banner
-        console.log(`Body: ${data.body.content}`);
+        //console.log(`Body: ${data.body.content}`);
         const preBody = data.body.content.split('</head>')[1];
         const preBody2 = preBody.split('<!-- BEGIN:IPW -->')[0];
 
@@ -55,7 +52,7 @@ export const getEmail = async (resource, sender, sub, parser) => {
         const postBody = data.body.content.split('<!-- END:IPW -->')[1];
         const postBody2 = postBody.split('</html>')[0];
         const body = preBody2 + postBody2;
-        console.log(`body: ${body}`);
+        //console.log(`body: ${body}`);
 
         const processedEmail = {
           sender: data.sender.emailAddress.address,
