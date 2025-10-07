@@ -21,6 +21,7 @@ export const getEmail = async (resource, sender, sub, parser) => {
     const subject = await getSubject(resource);
     const data = notification.data.value[0];
     const id = data.id;
+    console.log(`id: ${id}`);
     const attName1 = data.name.replace(/^fw:\s|re:\s/gim, '');
     const attName = attName1.startsWith('[EXT')
       ? attName1.split('[EXT]')[1]
@@ -40,6 +41,7 @@ export const getEmail = async (resource, sender, sub, parser) => {
         );
 
         const eData = attRes;
+        console.log(eData);
         const data = eData.data.item;
 
         //// STRIPS INKY BANNER FROM EMAIL BODY, LEAVES ALL HTML
@@ -68,6 +70,7 @@ export const getEmail = async (resource, sender, sub, parser) => {
         await createEmail(processedEmail, sender, sub, parser);
       } catch (err) {
         console.error(`Failed to get attachment properties: ${err}`);
+        console.log(`Data: ${processedEmail}`);
         await sendDenial(sender, sub, err);
       }
     } else if (subject === 'undefined') {
