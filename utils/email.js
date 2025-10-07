@@ -43,6 +43,7 @@ export const getEmail = async (resource, sender, sub, parser) => {
         const eData = attRes;
         console.log(eData);
         const data = eData.data.item;
+        console.log(`data: ${data}`);
 
         //// STRIPS INKY BANNER FROM EMAIL BODY, LEAVES ALL HTML
         // Everying before Inky banner
