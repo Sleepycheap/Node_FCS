@@ -21,8 +21,8 @@ router.get('/email', getEmails);
 router.get('/html', printHTML);
 router.post('/renew', lifecycle);
 
-router.get('/notifications', getNotifications);
+router.get('/', getNotifications);
 
-router.post('/notifications', postNotifications);
+router.post('/', postNotifications);
 
 export default router;

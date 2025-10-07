@@ -77,7 +77,7 @@ export const printHTML = (req, res) => {
 export const getNotifications = async (req, res) => {
   const validationToken = req.query.validationToken;
   if (validationToken) {
-    res.status(200).type('text/plain').send(validationToken);
+    res.status(202).type('text/plain').send(validationToken);
   } else {
     logger.error('GET /notification failed');
     res.status(400).send('Missing Validation Token');
@@ -89,7 +89,7 @@ export const postNotifications = async (req, res) => {
     // RESPONDS TO GRAPH API TO CREATE CHANGE NOTIFICATION
     const validationToken = req.query.validationToken;
     console.log(validationToken);
-    res.status(200).type('text/plain').send(validationToken);
+    res.status(202).type('text/plain').send(validationToken);
   } else {
     try {
       // This is triggered when new email comes in
