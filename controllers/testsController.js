@@ -8,6 +8,7 @@ import { getEmail } from '../utils/email.js';
 import { getSubject } from './emailController.js';
 import { sendDenial } from './confirmationController.js';
 import logger from '../logger.js';
+
 import { renewSubscription } from './../controllers/subscriptionController.js';
 
 export const createEmail = async (req, res, next) => {
