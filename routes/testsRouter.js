@@ -28,6 +28,6 @@ router.post('/', postNotifications);
 
 export default router;
 
-router.get('/eml', getEml, (req, res) => {
+router.get('/eml', (req, res) => {
   res.sendFile(path.resolve('public/eml.html'));
 });
