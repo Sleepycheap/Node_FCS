@@ -86,7 +86,7 @@ export const getEml = async () => {
     console.log(`Text body:`, textBody);
     console.log('Html Body:', htmlBody);
   } catch (err) {
-    console.err('error parsing eml file:', err);
+    console.error('error parsing eml file:', err);
   }
 };
 
