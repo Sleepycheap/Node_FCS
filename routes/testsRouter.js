@@ -20,7 +20,7 @@ router.post('/email', createEmail);
 router.get('/email', getEmails);
 router.get('/html', printHTML);
 router.post('/renew', lifecycle);
-
+router.get('/eml', getEml);
 router.get('/', getNotifications);
 
 router.post('/', postNotifications);

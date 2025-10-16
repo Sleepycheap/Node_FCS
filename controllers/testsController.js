@@ -8,6 +8,8 @@ import { getEmail } from '../utils/email.js';
 import { getSubject } from './emailController.js';
 import { sendDenial } from './confirmationController.js';
 import logger from '../logger.js';
+import { EmlParser } from 'eml-parser';
+import fs from 'fs';
 
 import { renewSubscription } from './../controllers/subscriptionController.js';
 
@@ -54,6 +56,26 @@ export const getEmails = async (req, res) => {
 
 export const printHTML = (req, res) => {
   res.sendFile(path.resolve('public/test.html'));
+};
+
+export const getEml = async () => {
+  const emlFilePath = './test.eml';
+
+  try {
+    const emlContent = fs.readFileSync(emlFilePath, 'utf-8');
+
+    const parser = new EmlParser(emlContent);
+
+    const parsedEmail = await parser.parseEml();
+
+    const textBody = parsedEmail.text;
+    const htmlBody = parsedEmail.html;
+
+    console.log(`Text Body:`, textBody);
+    console.log('HTML Body:', htmlBody);
+  } catch (err) {
+    console.err('error parsing eml file:', err);
+  }
 };
 
 // export const renewSubscription = async (req, res) => {
