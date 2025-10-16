@@ -1,0 +1,10 @@
+.container {
+  border: 2px solid black;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 95vh;
+}
+
+.text-body {
+  border: 2px solid red;
+}
