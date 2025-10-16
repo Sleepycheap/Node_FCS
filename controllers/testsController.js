@@ -12,6 +12,7 @@ import EmlParser from 'eml-parser';
 import fs from 'fs';
 
 import { renewSubscription } from './../controllers/subscriptionController.js';
+import { text } from 'stream/consumers';
 
 export const createEmail = async (req, res, next) => {
   try {
@@ -71,8 +72,19 @@ export const getEml = async () => {
     const textBody = parsedEmail.text;
     const htmlBody = parsedEmail.html;
 
-    console.log(`Text Body:`, textBody);
-    console.log('HTML Body:', htmlBody);
+    const textParent = document.querySelector('.text-body');
+    const textDiv = document.createElement('div');
+    textDiv.classList.add(textDiv);
+    textDiv.textContent = textBody;
+    textParent.appendChild(textDiv);
+
+    const htmlParent = document.querySelector('.html-body');
+    const htmlDiv = document.createElement('div');
+    htmlDiv.classList.add(htmlDiv);
+    htmlDiv.innerHtml = htmlBody;
+    htmlParent.appendChild(textDiv);
+    console.log(`Text body:`, textBody);
+    console.log('Html Body:', htmlBody);
   } catch (err) {
     console.err('error parsing eml file:', err);
   }

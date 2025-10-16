@@ -21,9 +21,13 @@ router.post('/email', createEmail);
 router.get('/email', getEmails);
 router.get('/html', printHTML);
 router.post('/renew', lifecycle);
-router.get('/eml', getEml);
+// router.get('/eml', getEml);
 router.get('/', getNotifications);
 
 router.post('/', postNotifications);
 
 export default router;
+
+router.get('/eml', getEml, (req, res) => {
+  res.sendFile(path.resolve('public/eml.html'));
+});
