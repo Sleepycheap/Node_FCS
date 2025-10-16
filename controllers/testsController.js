@@ -8,7 +8,7 @@ import { getEmail } from '../utils/email.js';
 import { getSubject } from './emailController.js';
 import { sendDenial } from './confirmationController.js';
 import logger from '../logger.js';
-import { EmlParser } from 'eml-parser';
+import EmlParser from 'eml-parser';
 import fs from 'fs';
 
 import { renewSubscription } from './../controllers/subscriptionController.js';
