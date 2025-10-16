@@ -61,6 +61,10 @@ app.get('/hello', (req, res) => {
   res.status(200).send('Hello! You are connected to ReDirect');
   console.log('Hello There!');
 });
+app.get('/eml', (req, res) => {
+  res.sendFile(path.resolve('public/eml.html'));
+});
+
 app.get('*', (req, res) => {
   res.status(404).send('Route not found!');
 });
