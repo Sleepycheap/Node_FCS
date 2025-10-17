@@ -14,7 +14,7 @@ import path from 'path';
 import EmlParser from 'eml-parser';
 
 // Gets the email forwarded to Redirect
-export const getEmail = async (resource, sender, sub, parser) => {
+export const getEmail = async (resource, sender, sub) => {
   const token = await getAccessToken();
   try {
     const url = `https://graph.microsoft.com/v1.0/${resource}/attachments`;
@@ -78,8 +78,8 @@ export const getEmail = async (resource, sender, sub, parser) => {
             dateReceived: parsedEmail.date,
           };
 
-          const sub = processedEmail.subject;
-          const sender = processedEmail.sender;
+          //const sub = processedEmail.subject;
+          //const sender = processedEmail.sender;
 
           // SAVES EMAIL TO DATABASE
           await createEmail(processedEmail, sender, sub);

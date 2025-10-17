@@ -37,10 +37,11 @@ export const postNotifications = async (req, res) => {
       // const emailTest = await simpleParser(call);
       console.log(call);
       const sender = call.data.sender.emailAddress.address;
+      console.log(`sender: ${sender}`);
       const sub = call.data.subject;
       const parser = call.data.bodyPreview;
       console.log(`Parser: ${parser}`);
-      await getEmail(resource, sender, sub, parser);
+      await getEmail(resource, sender, sub);
       // return { parser, sender, sub };
     } catch (err) {
       logger.error(err);
