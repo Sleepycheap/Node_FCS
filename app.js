@@ -6,8 +6,8 @@ import lifecycleRouter from './routes/lifecycleRouter.js';
 import testsRouter from './routes/testsRouter.js';
 import emailsendRouter from './routes/emailsendRouter.js';
 import mongoSanitize from 'express-mongo-sanitize';
-import xss from 'xss';
-//import helmet from 'helmet';
+import fs from 'fs';
+import EmlParser from 'eml-parser';
 import { rateLimit } from 'express-rate-limit';
 import formsRouter from './routes/formsRouter.js';
 import formLifeRouter from './routes/formLifeRouter.js';
@@ -17,6 +17,7 @@ import path from 'path';
 import logger from './logger.js';
 import pinoHTTP from 'pino-http';
 import { fileURLToPath } from 'url';
+import { parseEml } from './emlParse.js';
 
 const app = express();
 
@@ -61,9 +62,25 @@ app.get('/hello', (req, res) => {
   res.status(200).send('Hello! You are connected to ReDirect');
   console.log('Hello There!');
 });
-app.get('/eml', (req, res) => {
-  res.sendFile(path.resolve('public/eml.html'));
-});
+// app.get('/eml', async (req, res) => {
+//   try {
+//     const emlFilePath = path.resolve('test.eml');
+//     const stream = fs.createReadStream(emlFilePath);
+//     const parser = new EmlParser(stream);
+
+//     const parsedEmail = await parser.parseEml();
+
+//     console.log(`parsed email: ${parsedEmail}`);
+//     console.log(`Subject: ${parsedEmail.subject}`);
+//     console.log(`From: ${parsedEmail.from}`);
+//     console.log(`Text body: ${parsedEmail.text}`);
+//     console.log(`Html body: ${parsedEmail.html}`);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: 'failed to parse eml file' });
+//   }
+// });
+app.get('/eml', parseEml);
 
 app.get('*', (req, res) => {
   res.status(404).send('Route not found!');

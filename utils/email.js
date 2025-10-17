@@ -100,12 +100,12 @@ export const smtpSend = async (processedEmail, sender, sub, parser) => {
   });
 
   // CREATES ATTACHMENTS ARRAY
-  const attachedData = processedEmail.attachments;
-  const processedAttachments = attachedData.map((att) => ({
-    filename: att.name,
-    content: Buffer.from(att.contentBytes, 'base64'),
-    contentType: att.contentType,
-  }));
+  // const attachedData = processedEmail.attachments;
+  // const processedAttachments = attachedData.map((att) => ({
+  //   filename: att.name,
+  //   content: Buffer.from(att.contentBytes, 'base64'),
+  //   contentType: att.contentType,
+  // }));
 
   try {
     // Creates email and sends to helpdesk
@@ -115,7 +115,7 @@ export const smtpSend = async (processedEmail, sender, sub, parser) => {
       subject: processedEmail.subject,
       text: parser,
       html: processedEmail.body,
-      attachments: processedAttachments,
+      //attachments: processedAttachments,
     });
     console.log(
       'Message sent: %s',
