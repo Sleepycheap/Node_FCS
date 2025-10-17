@@ -70,12 +70,24 @@ export const getEmail = async (resource, sender, sub) => {
             return s2;
           }
 
+          const rawCC = parsedEmail.cc.html;
+          const splitCC = rawCC.split(',');
+
+          let ccUsers = [];
+
+          for (const i of splitCC) {
+            const split1 = i.split(':')[1];
+            const split2 = split1.split('"')[0];
+            ccUsers.push(split2);
+          }
+
           const processedEmail = {
             sender: getSender(),
             subject: parsedEmail.subject,
             body: html,
             attachments: parsedEmail.attachments,
             dateReceived: parsedEmail.date,
+            cc: ccUsers,
           };
 
           //const sub = processedEmail.subject;
@@ -128,6 +140,7 @@ export const smtpSend = async (processedEmail, sender, sub) => {
     const email = await transporter.sendMail({
       from: processedEmail.sender,
       to: process.env.SMTP_TO_ADDRESS,
+      cc: processedEmail.cc,
       subject: processedEmail.subject,
       html: processedEmail.body,
       //attachments: processedAttachments,

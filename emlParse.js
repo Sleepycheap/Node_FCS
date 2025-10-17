@@ -15,7 +15,7 @@ export const parseEml = async () => {
   const token = await getAccessToken();
   try {
     const url = await axios.get(
-      'https://graph.microsoft.com/v1.0/users/redirect@fcskc.com/mailFolders/AQMkADgwNzM0ZDllLTVhYmIALTQ1NmQtYjBiOC0xYjkwMjlkNjQzZTkALgAAA_EOr3VJIrhAjD0K7AVcVzQBAGYay0L1WcZBjJQK7WQjAnYAAAIBDAAAAA==/messages/AAMkADgwNzM0ZDllLTVhYmItNDU2ZC1iMGI4LTFiOTAyOWQ2NDNlOQBGAAAAAADhDq91SSK4QIw9CuwFXFc0BwBmGstC9VnGQYyUCu1kIwJ2AAAAAAEMAABmGstC9VnGQYyUCu1kIwJ2AABJAyPgAAA=/attachments/AAMkADgwNzM0ZDllLTVhYmItNDU2ZC1iMGI4LTFiOTAyOWQ2NDNlOQBGAAAAAADhDq91SSK4QIw9CuwFXFc0BwBmGstC9VnGQYyUCu1kIwJ2AAAAAAEMAABmGstC9VnGQYyUCu1kIwJ2AABJAyPgAAABEgAQAJfDCQ6nQplPhwNqiLLlIZ4=/$value',
+      'https://graph.microsoft.com/v1.0/users/redirect@fcskc.com/mailFolders/AQMkADgwNzM0ZDllLTVhYmIALTQ1NmQtYjBiOC0xYjkwMjlkNjQzZTkALgAAA_EOr3VJIrhAjD0K7AVcVzQBAGYay0L1WcZBjJQK7WQjAnYAAAIBDAAAAA==/messages/AAMkADgwNzM0ZDllLTVhYmItNDU2ZC1iMGI4LTFiOTAyOWQ2NDNlOQBGAAAAAADhDq91SSK4QIw9CuwFXFc0BwBmGstC9VnGQYyUCu1kIwJ2AAAAAAEMAABmGstC9VnGQYyUCu1kIwJ2AABJAyPpAAA=/attachments/AAMkADgwNzM0ZDllLTVhYmItNDU2ZC1iMGI4LTFiOTAyOWQ2NDNlOQBGAAAAAADhDq91SSK4QIw9CuwFXFc0BwBmGstC9VnGQYyUCu1kIwJ2AAAAAAEMAABmGstC9VnGQYyUCu1kIwJ2AABJAyPpAAABEgAQALHDaWce9l5JkThmzWxwj5s=/$value',
       { headers: { Authorization: `Bearer ${token}` } },
     );
 
@@ -37,20 +37,9 @@ export const parseEml = async () => {
       const stream = fs.createReadStream(emlFilePath);
       const parser = new EmlParser(stream);
       const parsedEmail = await parser.parseEml();
-
-      //console.log(`Parsed email sender: ${parsedEmail.from.text}`);
-      // console.log(`subject: ${parsedEmail.subject}`);
-      // console.log(`html: ${parsedEmail.html}`);
-      // console.log(`text: ${parsedEmail.text}`);
-      // console.log(`text: ${text}`);
-
-      // const preBody = text.split('</head>')[1];
-      // console.log(`prebody: ${preBody}`);
-      // const preBody2 = preBody.split('<!-- BEGIN:IPW -->')[0];
-
-      // const postBody = text.split('<!-- END:IPW -->')[1];
-      // const postBody2 = postBody.split('</html>')[0];
-      // const body = preBody2 + postBody2;
+      const attachments = await parser.getEmailAttachments();
+      //const attach = attObject.attachments;
+      console.log(`Attachments: ${attachments}`);
 
       const html = parsedEmail.html;
 
@@ -61,6 +50,37 @@ export const parseEml = async () => {
         console.log(s2);
         return s2;
       }
+
+      const rawCC = parsedEmail.cc.html;
+      // console.log(`Raw: ${rawCC}`);
+      const test = rawCC.split(',');
+
+      let ccUsers = [];
+      for (const i of test) {
+        const split = i.split(':')[1];
+        const split2 = split.split('"')[0];
+        console.log(`Split2: ${split2}`);
+
+        ccUsers.push(split2);
+      }
+
+      console.log(`ccUsers: ${ccUsers}`);
+      console.log(`User: ${ccUsers[0]}`);
+
+      //const test2 = test.split('"');
+      // console.log(`test: ${test}`);
+      // console.log(typeof test);
+      // console.log(`A: ${a}`);
+      // console.log(Object.entries(object));
+      // console.log(`finalCC: ${split}`);
+      // console.log(ccAddresses);
+      // [
+      //   [
+      //     '0',
+      //     ' <span class="mp_address_group"><a href="mailto:dani@summithomeskc.com" class="mp_address_email">dani@summithomeskc.com</a></span>',
+      //   ],
+      // ];
+      // console.log(`CC: ${processedCC}`);
 
       const processedEmail = {
         sender: getSender(),
@@ -74,7 +94,7 @@ export const parseEml = async () => {
       const sender = processedEmail.sender;
       // console.log(`Processed Email Sender: ${processedEmail.sender}`);
       // console.log(`Processed Email Body: ${processedEmail.body}`);
-      smtpSend(processedEmail, sender, sub);
+      //smtpSend(processedEmail, sender, sub);
     } catch (err) {
       console.error('Unable to parse EML file', err);
     }
