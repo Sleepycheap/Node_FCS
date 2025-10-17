@@ -20,6 +20,8 @@ export const sendConfirm = async (sender, sub) => {
     recipient = sender;
   }
 
+  console.log(`recipient: ${recipient}`);
+
   try {
     // Creates email and sends to helpdesk
     const email = await transporter.sendMail({
