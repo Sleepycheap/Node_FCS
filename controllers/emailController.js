@@ -37,13 +37,13 @@ export const createEmail = async (processedEmail, sender, sub) => {
         sender: processedEmail.sender,
         subject: processedEmail.subject,
         body: processedEmail.body,
-        attachments: processedEmail.attachments,
+        //attachments: processedEmail.attachments,
         dateReceived: processedEmail.dateReceived,
         dateSent: processedEmail.dateSent,
       },
     ]);
     // Sends email if not already saved to database
-    await smtpSend(processedEmail, sender, sub, parser);
+    await smtpSend(processedEmail, sender, sub);
   } catch (err) {
     let errMsg = '';
     if (err.code === 11000) {
