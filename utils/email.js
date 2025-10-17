@@ -10,6 +10,8 @@ import {
 import { simpleParser } from 'mailparser';
 const { JSDOM } = jsdom;
 import fs from 'fs';
+import path from 'path';
+import EmlParser from 'eml-parser';
 
 // Gets the email forwarded to Redirect
 export const getEmail = async (resource, sender, sub, parser) => {
