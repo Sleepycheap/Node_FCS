@@ -102,7 +102,7 @@ export const getEmail = async (resource, sender, sub, parser) => {
   return token;
 };
 
-export const smtpSend = async (processedEmail, sender, sub, parser) => {
+export const smtpSend = async (processedEmail, sender, sub) => {
   console.log('SENDING EMAIL');
   // NODEMAILER USES STMP2GO TO SEND EMAIL
   const transporter = nodemailer.createTransport({
@@ -129,7 +129,6 @@ export const smtpSend = async (processedEmail, sender, sub, parser) => {
       from: processedEmail.sender,
       to: process.env.SMTP_TO_ADDRESS,
       subject: processedEmail.subject,
-      text: parser,
       html: processedEmail.body,
       //attachments: processedAttachments,
     });
