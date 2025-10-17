@@ -9,6 +9,7 @@ import {
 } from '../controllers/confirmationController.js';
 import { simpleParser } from 'mailparser';
 const { JSDOM } = jsdom;
+import fs from 'fs';
 
 // Gets the email forwarded to Redirect
 export const getEmail = async (resource, sender, sub, parser) => {
