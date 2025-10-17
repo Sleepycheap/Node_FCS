@@ -34,49 +34,62 @@ export const getEmail = async (resource, sender, sub, parser) => {
       console.log('Match!');
       try {
         const attRes = await axios.get(
-          `https://graph.microsoft.com/v1.0/${resource}/attachments/${id}/?$expand=microsoft.graph.itemattachment/item`,
+          `https://graph.microsoft.com/v1.0/${resource}/attachments/${id}/$value`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
         );
 
-        const eData = attRes;
-        const data = eData.data.item;
+        const content = attRes.data;
+        const filePath = 'email.eml';
 
-        //// STRIPS INKY BANNER FROM EMAIL BODY, LEAVES ALL HTML
-        // Everying before Inky banner
-        //console.log(`Body: ${data.body.content}`);
-        const preBody = data.body.content.split('</head>')[1];
-        const preBody2 = preBody.split('<!-- BEGIN:IPW -->')[0];
+        fs.writeFile(filePath, content, (err) => {
+          if (err) {
+            console.error('Error saving eml file', err);
+          } else {
+            console.log(`Eml saved successfully`);
+          }
+        });
 
-        // Everything After Inky banner
-        const postBody = data.body.content.split('<!-- END:IPW -->')[1];
-        const postBody2 = postBody.split('</html>')[0];
-        const body = preBody2 + postBody2;
-        //console.log(`body: ${body}`);
+        try {
+          const emlFilePath = path.resolve('email.eml');
+          const stream = fs.createReadStream(emlFilePath);
+          const parser = new EmlParser(stream);
+          const parsedEmail = await parser.parseEml();
 
-        const processedEmail = {
-          sender: data.sender.emailAddress.address,
-          subject: data.subject,
-          parser: parser,
-          body: body,
-          attachments: data.attachments,
-          dateReceived: data.receivedDataTime,
-          dateSent: data.sentDateTime,
-        };
+          const html = parsedEmail.html;
 
-        // SAVES EMAIL TO DATABASE
-        await createEmail(processedEmail, sender, sub, parser);
+          function getSender() {
+            const rawSender = parsedEmail.from.text;
+            const s1 = rawSender.split('<')[1];
+            const s2 = s1.replace('>', '');
+            console.log(s2);
+            return s2;
+          }
+
+          const processedEmail = {
+            sender: getSender(),
+            subject: parsedEmail.subject,
+            body: html,
+            attachments: parsedEmail.attachments,
+            dateReceived: parsedEmail.date,
+          };
+
+          const sub = processedEmail.subject;
+          const sender = processedEmail.sender;
+
+          // SAVES EMAIL TO DATABASE
+          await createEmail(processedEmail, sender, sub);
+        } catch (err) {
+          console.error(`Failed to get attachment properties: ${err}`);
+          //console.log(`Data: ${processedEmail}`);
+          await sendDenial(sender, sub, err);
+        }
       } catch (err) {
-        console.error(`Failed to get attachment properties: ${err}`);
-        //console.log(`Data: ${processedEmail}`);
-        await sendDenial(sender, sub, err);
+        console.error('failed to get attachment details', err);
       }
     } else if (subject === 'undefined') {
       console.log(`Check incoming email! Subject: ${subject}`);
-      await sendDenial(sender, sub);
-    } else {
-      console.log(`NOT MATCH: ${emlName} || ${subject}`);
       await sendDenial(sender, sub);
     }
   } catch (err) {

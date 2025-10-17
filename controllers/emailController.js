@@ -30,13 +30,12 @@ export const getSubject = async (resource) => {
 };
 
 // Saves email to database
-export const createEmail = async (processedEmail, sender, sub, parser) => {
+export const createEmail = async (processedEmail, sender, sub) => {
   try {
     const newEmail = await Email.create([
       {
         sender: processedEmail.sender,
         subject: processedEmail.subject,
-        parser: parser,
         body: processedEmail.body,
         attachments: processedEmail.attachments,
         dateReceived: processedEmail.dateReceived,
