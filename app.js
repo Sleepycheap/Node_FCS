@@ -18,6 +18,7 @@ import logger from './logger.js';
 import pinoHTTP from 'pino-http';
 import { fileURLToPath } from 'url';
 import { parseEml } from './emlParse.js';
+import { getExampleAttachments } from './notes.js';
 
 const app = express();
 
@@ -81,6 +82,7 @@ app.get('/hello', (req, res) => {
 //   }
 // });
 app.get('/eml', parseEml);
+app.get('/notes', getExampleAttachments);
 
 app.get('*', (req, res) => {
   res.status(404).send('Route not found!');

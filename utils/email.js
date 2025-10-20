@@ -58,40 +58,36 @@ export const getEmail = async (resource, sender, sub) => {
           const emlFilePath = path.resolve('email.eml');
           const stream = fs.createReadStream(emlFilePath);
           const parser = new EmlParser(stream);
-          const parsedEmail = await parser.parseEml();
+          const result = await parser.parseEml();
+          const attachments = await parser.getEmailAttachments();
 
-          const html = parsedEmail.html;
+          const processedAttachments = attachments.map((att) => ({
+            filename: att.filename,
+            content: Buffer.from(att.content, 'base64'),
+            contentType: att.contentType,
+          }));
 
-          function getSender() {
-            const rawSender = parsedEmail.from.text;
-            const s1 = rawSender.split('<')[1];
-            const s2 = s1.replace('>', '');
-            console.log(s2);
-            return s2;
-          }
-
-          const rawCC = parsedEmail.cc.html;
-          const splitCC = rawCC.split(',');
-
-          let ccUsers = [];
-
-          for (const i of splitCC) {
-            const split1 = i.split(':')[1];
-            const split2 = split1.split('"')[0];
-            ccUsers.push(split2);
+          const cc = result.cc.value;
+          const len = Object.keys(cc).length;
+          let ccAddress = [];
+          let c = 0;
+          for (const a of cc) {
+            let address = cc[c].address;
+            ccAddress.push(address);
+            c++;
           }
 
           const processedEmail = {
-            sender: getSender(),
-            subject: parsedEmail.subject,
-            body: html,
-            attachments: parsedEmail.attachments,
-            dateReceived: parsedEmail.date,
-            cc: ccUsers,
+            sender: result.from.value[0].address,
+            subject: result.subject,
+            body: result.html,
+            attachments: processedAttachments,
+            dateReceived: result.date.toLocaleString(),
+            cc: ccAddress,
           };
 
-          //const sub = processedEmail.subject;
-          //const sender = processedEmail.sender;
+          const sub = processedEmail.subject;
+          const sender = processedEmail.sender;
 
           // SAVES EMAIL TO DATABASE
           await createEmail(processedEmail, sender, sub);
@@ -143,12 +139,12 @@ export const smtpSend = async (processedEmail, sender, sub) => {
       cc: processedEmail.cc,
       subject: processedEmail.subject,
       html: processedEmail.body,
-      //attachments: processedAttachments,
+      attachments: processedEmail.attachments,
     });
     console.log(
       'Message sent: %s',
       email.messageId,
-      `Email Data: ${processedEmail}`,
+      `Email Data: ${processedEmail.subject}`,
     );
     console.log('Preview URL: %s', nodemailer.getTestMessageUrl(email));
     await sendConfirm(sender, sub);
