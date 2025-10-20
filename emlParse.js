@@ -36,6 +36,7 @@ export const parseEml = async () => {
       const stream = fs.createReadStream(emlFilePath);
       const parser = new EmlParser(stream);
       const result = await parser.parseEml();
+      // console.log('result', result);
 
       const attachments = await parser.getEmailAttachments();
 
@@ -45,22 +46,32 @@ export const parseEml = async () => {
         contentType: att.contentType,
       }));
 
-      const cc = result.cc.value;
-      const len = Object.keys(cc).length;
       let ccAddress = [];
-      let c = 0;
-      for (const a of cc) {
-        let address = cc[c].address;
-        ccAddress.push(address);
-        c++;
+      let cc = false;
+      const getCC = () => {};
+      if (result.cc) {
+        let cc = result.cc.value;
+        const len = Object.keys(cc).length;
+        let c = 0;
+        for (const a of cc) {
+          let address = cc[c].address;
+          ccAddress.push(address);
+          c++;
+        }
+        console.log('cc', cc);
+      } else {
+        let cc = false;
+        console.log(`cc`, cc);
       }
+      getCC();
+
       const processedEmail = {
         sender: result.from.value[0].address,
         subject: result.subject,
         body: result.html,
         attachments: processedAttachments,
         dateReceived: result.date.toLocaleString(),
-        cc: ccAddress,
+        cc: (cc = false ? '' : ccAddress),
       };
 
       const sub = processedEmail.subject;

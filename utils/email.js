@@ -59,23 +59,34 @@ export const getEmail = async (resource, sender, sub) => {
           const stream = fs.createReadStream(emlFilePath);
           const parser = new EmlParser(stream);
           const result = await parser.parseEml();
-          const attachments = await parser.getEmailAttachments();
 
+          // Gets attachments of ReDirected email
+          const attachments = await parser.getEmailAttachments();
           const processedAttachments = attachments.map((att) => ({
             filename: att.filename,
             content: Buffer.from(att.content, 'base64'),
             contentType: att.contentType,
           }));
 
-          const cc = result.cc.value;
-          const len = Object.keys(cc).length;
+          // Get CCs and creates array if present
           let ccAddress = [];
-          let c = 0;
-          for (const a of cc) {
-            let address = cc[c].address;
-            ccAddress.push(address);
-            c++;
+          let cc = false;
+          const getCC = () => {};
+          if (result.cc) {
+            let cc = result.cc.value;
+            const len = Object.keys(cc).length;
+            let c = 0;
+            for (const a of cc) {
+              let address = cc[c].address;
+              ccAddress.push(address);
+              c++;
+            }
+            console.log('cc', cc);
+          } else {
+            let cc = false;
+            console.log(`cc`, cc);
           }
+          getCC();
 
           const processedEmail = {
             sender: result.from.value[0].address,
@@ -93,7 +104,6 @@ export const getEmail = async (resource, sender, sub) => {
           await createEmail(processedEmail, sender, sub);
         } catch (err) {
           console.error(`Failed to get attachment properties: ${err}`);
-          //console.log(`Data: ${processedEmail}`);
           await sendDenial(sender, sub, err);
         }
       } catch (err) {
@@ -122,15 +132,6 @@ export const smtpSend = async (processedEmail, sender, sub) => {
       pass: process.env.SMTP_PASS,
     },
   });
-
-  // CREATES ATTACHMENTS ARRAY
-  // const attachedData = processedEmail.attachments;
-  // const processedAttachments = attachedData.map((att) => ({
-  //   filename: att.name,
-  //   content: Buffer.from(att.contentBytes, 'base64'),
-  //   contentType: att.contentType,
-  // }));
-
   try {
     // Creates email and sends to helpdesk
     const email = await transporter.sendMail({
